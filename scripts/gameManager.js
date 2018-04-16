@@ -8,9 +8,11 @@ function GameManager(){
 	this.ui;
 	this.menu;
 	this.playing;
+	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
 	
 	this.startGame = function(){
 		this.playing = false;
+		this.paused = false;
 		this.menu = new Menu(0);
 	}
 	
@@ -38,9 +40,11 @@ function GameManager(){
 	//Invokes all the functions necessary for each draw cycle.
 	this.manage = function(){
 		if(!this.playing){
-			//this.menuControls();
 			this.menu.display();
 		} else{
+			if(this.paused){
+				this.pause();
+			}
 			this.playerBulletManager.manage();
 			this.alienBulletManager.manage();
 			this.playControls();
@@ -77,6 +81,12 @@ function GameManager(){
 		this.lives += additionalLives;
 	}
 	
+	this.pause = function(){
+		background(0);
+		textAlign(CENTER);
+		text("PAUSED", width/2, height/2);
+	}
+	
 	//controls N.B fire control still in sketch.
 	this.playControls = function(){
 		if(keyIsDown(LEFT_ARROW) || keyIsDown(65)){
@@ -86,19 +96,39 @@ function GameManager(){
 			this.shooter.move(false);
 		}
 	}
-	
-	//Controls for menus. MUST BE KEY PRESSED
-	/*this.menuControls = function(){
-		if(keyIsDown(UP_ARROW) || keyIsDown(87)){
-			this.menu.changeSelection(-1);
-		}else if(keyIsDown(DOWN_ARROW) || keyIsDown(83)){
-			this.menu.changeSelection(1);
-		}
-		else if(keyIsDown(32)){
-			this.menu.select();
-		}
-	}*/
 
+}
+
+//Event handler called whenever a key is pressed.
+function keyPressed(){
+	if(gameManager.playing){
+		if(keyCode === 32){
+		gameManager.shooter.fire(gameManager.playerBulletManager);
+		}
+	} else {
+		if(keyCode === 87 || keyCode === 38){
+		gameManager.menu.changeSelection(-1);
+		} else if(keyCode === 83 || keyCode === 40){
+			gameManager.menu.changeSelection(1);
+		} else if(keyCode === 13 || keyCode === 32){
+			gameManager.menu.select();
+		}
+	}	
+}
+
+//Event handler called whenever a key is released.
+function keyReleased(){
+	if(gameManager.playing){
+		if(keyCode === 80){
+			if(!gameManager.paused){
+				gameManager.paused = true;
+				noLoop();
+			} else{
+				gameManager.paused = false;
+				loop();
+			}
+		}
+	}
 }
 
 	

@@ -30,6 +30,9 @@ Menu.prototype.display = function(){
 //Displays the main menu content, current selection is bold yellow.
 Menu.prototype.mainMenu = function(){
 	var options = ["Play", "Controls", "High Scores"];
+	//Placeholder for S-I logo. The image requires hosting on a server due to x-origin blocking.
+	stroke("red");
+	rect(50, 30, 540, 200);
 	this.contentStyle();
 	text("Main Menu", width/2, height/4);
 	for(var i = 0; i < 3; i++){

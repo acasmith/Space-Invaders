@@ -32,7 +32,7 @@ function Shooter(){
 	this.fire = function(playerBulletManager){
 		if(playerBulletManager.isEmpty()){
 			playerBulletManager.add(new Bullet(this.x + 22.5, this.y - 8, this.bulletColor));
-			this.shootSound.play();
+			//this.shootSound.play();	//Commented out for chrome testing.
 		}
 	}
 	

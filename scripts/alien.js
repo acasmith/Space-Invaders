@@ -37,7 +37,7 @@ Alien.prototype.detectCollision = function(bullet){
 	var xDistance = Math.abs(this.x - bullet.x);
 	var yDistance = Math.abs(this.y - bullet.y);
 	if(xDistance <= this.radius && yDistance <= this.radius){
-		this.killedSound.play();
+		this.killedSound.play();	//Commented out for chrome testing
 		return true;
 	}
 	return false;
