@@ -2,7 +2,9 @@
 function Alien(x, y){
 	this.x = x;
 	this.y = y;
-	this.radius = 35/2;
+	this.width = Alien.prototype.graphic.width;
+	this.height = Alien.prototype.graphic.height;
+	this.radius = this.width;	//Only used for ellipse collision, not graphic.
 	this.color = "#39ff14";
 	this.direction = false;
 }
@@ -11,8 +13,10 @@ function Alien(x, y){
 
 //Displays the alien on the canvas.
 Alien.prototype.display = function(){
-	fill(this.color);
-	ellipse(this.x, this.y, 35, 35);
+	//fill(this.color);
+	//ellipse(this.x, this.y, 35, 35);
+	image(Alien.prototype.graphic, this.x, this.y);
+	
 }
 
 //Moves the alien either left or right depending on the value of this.direction.
@@ -36,7 +40,7 @@ Alien.prototype.reset = function(){
 Alien.prototype.detectCollision = function(bullet){
 	var xDistance = Math.abs(this.x - bullet.x);
 	var yDistance = Math.abs(this.y - bullet.y);
-	if(xDistance <= this.radius && yDistance <= this.radius){
+	if(xDistance <= this.width && yDistance <= this.height){
 		this.killedSound.play();	//Commented out for chrome testing
 		return true;
 	}
@@ -55,6 +59,7 @@ window.addEventListener("load", addToPrototype);
 function addToPrototype(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
+	Alien.prototype.graphic = loadImage("images/alien1.png");
 }
 
 /*********End inherited functions*******/
