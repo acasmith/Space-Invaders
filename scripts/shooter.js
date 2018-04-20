@@ -6,11 +6,13 @@ function Shooter(){
 	this.bulletColor = 255;
 	this.currentTimeout;
 	this.bullet;
-	this.shootSound = loadSound("sounds/shoot.wav");
-	this.shootSound.setVolume(0.1);
+	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
+	Shooter.prototype.shootSound.setVolume(0.1);
+	
+	/*****Inherited functions****/
 	
 	//Displays the object.
-	this.display = function(){
+	Shooter.prototype.display = function(){
 		fill(this.myColor);
 		stroke(this.myColor);
 		rect(this.x + 20, this.y - 8, 10, 20); //barrel
@@ -20,7 +22,7 @@ function Shooter(){
 	
 	//If the function is at canvas edge and trying to move further, return.
 	//Else move 5px left or right based on the argument.
-	this.move = function(left){
+	Shooter.prototype.move = function(left){
 		if((this.x < 5 && left) || (this.x > width - 55 && !left)){
 			return;
 		}
@@ -29,16 +31,20 @@ function Shooter(){
 	}
 	
 	//Creates a new bullet.
-	this.fire = function(playerBulletManager){
+	Shooter.prototype.fire = function(playerBulletManager){
 		if(playerBulletManager.isEmpty()){
 			playerBulletManager.add(new Bullet(this.x + 22.5, this.y - 8, this.bulletColor));
-			//this.shootSound.play();	//Commented out for chrome testing.
+			var isFirefox = typeof InstallTrigger !== 'undefined';
+			if(!isFirefox){
+				Shooter.prototype.shootSound.play();	//Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+			}
+			
 		}
 	}
 	
 	//Detects is the player intersects with an alien bullet.
 	//NOTE: Current hitbox does not include barrel.
-	this.detectCollisions = function(alienBulletManager){
+	Shooter.prototype.detectCollisions = function(alienBulletManager){
 		for(var i = 0; i < alienBulletManager.size(); i++){
 			var xDistance = alienBulletManager.getBullet(i).x - this.x;
 			var yDistance = alienBulletManager.getBullet(i).y - this.y;
@@ -54,10 +60,12 @@ function Shooter(){
 	}
 	
 	//Orchestration function for regular shooter functions.
-	this.manage = function(alienManager, alienBulletManager){
+	Shooter.prototype.manage = function(alienManager, alienBulletManager){
 		if(this.detectCollisions(alienBulletManager)){
 			gameManager.updateLives(-1);
 		}
 		this.display();
 	}
+	
+	/*******End inherited functions******/
 }

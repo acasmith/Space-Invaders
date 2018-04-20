@@ -37,7 +37,10 @@ Alien.prototype.detectCollision = function(bullet){
 	var xDistance = Math.abs(this.x - bullet.x);
 	var yDistance = Math.abs(this.y - bullet.y);
 	if(xDistance <= this.radius && yDistance <= this.radius){
-		this.killedSound.play();	//Commented out for chrome testing
+	var isFirefox = typeof InstallTrigger !== 'undefined';
+		if(!isFirefox){
+			Shooter.prototype.shootSound.play();	//Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+		}	
 		return true;
 	}
 	return false;
@@ -53,6 +56,7 @@ Alien.prototype.shoot = function(){
 //Adds sound functions to prototype when page loads otherwise p5.sound is unaccessible.
 window.addEventListener("load", addToPrototype);
 function addToPrototype(){
+	console.log("called");
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
 }
