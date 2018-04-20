@@ -16,7 +16,7 @@ Alien.prototype.display = function(){
 	//fill(this.color);
 	//ellipse(this.x, this.y, 35, 35);
 	image(Alien.prototype.graphic, this.x, this.y);
-	
+
 }
 
 //Moves the alien either left or right depending on the value of this.direction.
@@ -38,11 +38,13 @@ Alien.prototype.reset = function(){
 
 //Returns true if the argument is within the aliens radius, otheriwse false.
 Alien.prototype.detectCollision = function(bullet){
-	var xDistance = this.x - bullet.x;
-	var yDistance = this.y - bullet.y;
-	if((xDistance <= 0 && xDistance + this.width >= 0) && 
-		(yDistance <= 0 && yDistance + this.height >= 0)){
-		this.killedSound.play();	//Commented out for chrome testing
+	var xDistance = Math.abs(this.x - bullet.x);
+	var yDistance = Math.abs(this.y - bullet.y);
+	if(xDistance <= this.radius && yDistance <= this.radius){
+	var isFirefox = typeof InstallTrigger !== 'undefined';
+		if(!isFirefox){
+			Shooter.prototype.shootSound.play();	//Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+		}
 		return true;
 	}
 	return false;
@@ -58,6 +60,7 @@ Alien.prototype.shoot = function(){
 //Adds sound functions to prototype when page loads otherwise p5.sound is unaccessible.
 window.addEventListener("load", addToPrototype);
 function addToPrototype(){
+	console.log("called");
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
 	Alien.prototype.graphic = loadImage("images/alien1.png");
