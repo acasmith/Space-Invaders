@@ -38,9 +38,10 @@ Alien.prototype.reset = function(){
 
 //Returns true if the argument is within the aliens radius, otheriwse false.
 Alien.prototype.detectCollision = function(bullet){
-	var xDistance = Math.abs(this.x - bullet.x);
-	var yDistance = Math.abs(this.y - bullet.y);
-	if(xDistance <= this.width && yDistance <= this.height){
+	var xDistance = this.x - bullet.x;
+	var yDistance = this.y - bullet.y;
+	if((xDistance <= 0 && xDistance + this.width >= 0) && 
+		(yDistance <= 0 && yDistance + this.height >= 0)){
 		this.killedSound.play();	//Commented out for chrome testing
 		return true;
 	}
