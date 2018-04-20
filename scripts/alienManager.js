@@ -5,8 +5,8 @@ function AlienManager(){
 	//Returns a list containing 6 alien objects.
 	this.createRow = function(yVal){
 		var row = new List();
-		for(var j = 0; j < 6; j++){
-			row.add(new Alien(140 + (75 * j), 200 + yVal), j);
+		for(var j = 0; j < 11; j++){
+			row.add(new Alien(140 + (40 * j), 200 + yVal), j);
 		}
 		return row;
 	}

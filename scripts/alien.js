@@ -2,37 +2,33 @@
 function Alien(x, y){
 	this.x = x;
 	this.y = y;
-	this.width = Alien.prototype.graphic.width;
-	this.height = Alien.prototype.graphic.height;
-	this.radius = this.width;	//Only used for ellipse collision, not graphic.
+	this.width = Alien.prototype.graphic0.width;
+	this.height = Alien.prototype.graphic0.height;
 	this.color = "#39ff14";
 	this.direction = false;
+	this.animationState = false;
+	this.sprite = Alien.prototype.graphic0;
 }
 
 /********Inherited Functions**********/
 
 //Displays the alien on the canvas.
 Alien.prototype.display = function(){
-	//fill(this.color);
-	//ellipse(this.x, this.y, 35, 35);
-	image(Alien.prototype.graphic, this.x, this.y);
-
+	image(this.sprite, this.x, this.y);
 }
 
 //Moves the alien either left or right depending on the value of this.direction.
 //Returns true when the alien moves out of bounds.
 Alien.prototype.move = function(){
 	this.x = this.direction ? this.x - 10: this.x + 10;
-	if(this.x <= 17.5 || this.x > width - 17.5){
-		return true;
-	}
-	return false;
+	this.changeSprite();
+	return this.isOutOfBounds();
 }
 
 //Moves the alien down and in the opposite x direction.
 Alien.prototype.reset = function(){
 	this.direction = !this.direction;
-	this.y += 35;
+	this.y += this.height;
 	this.x = this.direction ? this.x - 17.5 : this.x + 17.5;
 }
 
@@ -56,6 +52,20 @@ Alien.prototype.shoot = function(){
 	return new Bullet(this.x, this.y, this.color);
 }
 
+//Changes sprite.
+Alien.prototype.changeSprite = function(){
+	this.sprite = this.animation ? Alien.prototype.graphic1 : Alien.prototype.graphic0;
+	this.animation = !this.animation;
+}
+
+//Detects if the alien is out of bounds.
+Alien.prototype.isOutOfBounds = function(){
+	if(this.x <= 0 || this.x > width - this.width){
+		return true;
+	}
+	return false;
+}
+
 
 
 //Adds sound functions to prototype when page loads otherwise p5.sound is unaccessible.
@@ -63,7 +73,8 @@ window.addEventListener("load", addToPrototype);
 function addToPrototype(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.graphic = loadImage("images/alien1.png");
+	Alien.prototype.graphic0 = loadImage("images/alien1.png");
+	Alien.prototype.graphic1 = loadImage("images/alien1.5.png");
 }
 
 /*********End inherited functions*******/
