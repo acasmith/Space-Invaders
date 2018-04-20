@@ -42,9 +42,6 @@ function GameManager(){
 		if(!this.playing){
 			this.menu.display();
 		} else{
-			if(this.paused){
-				this.pause();
-			}
 			this.playerBulletManager.manage();
 			this.alienBulletManager.manage();
 			this.playControls();
@@ -52,6 +49,9 @@ function GameManager(){
 			this.shooter.manage(this.alienManager, this.alienBulletManager);
 			this.ui.display(this.score, this.lives);
 			this.checkGameStatus();
+			if(this.paused){
+				this.pause();
+			}
 		}
 	}
 	

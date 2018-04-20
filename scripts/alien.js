@@ -4,7 +4,7 @@ function Alien(x, y){
 	this.y = y;
 	this.width = Alien.prototype.graphic0.width;
 	this.height = Alien.prototype.graphic0.height;
-	this.color = "#39ff14";
+	this.color = 255;
 	this.direction = false;
 	this.animationState = false;
 	this.sprite = Alien.prototype.graphic0;
@@ -36,7 +36,7 @@ Alien.prototype.reset = function(){
 Alien.prototype.detectCollision = function(bullet){
 	var xDistance = this.x - bullet.x;
 	var yDistance = this.y - bullet.y;
-	if((xDistance <= 0 && xDistance + this.width >= 0) && 
+	if((xDistance <= Bullet.prototype.width && xDistance + this.width >= 0) && 
 		(yDistance <= 0 && yDistance + this.height >= 0)){
 	var isFirefox = typeof InstallTrigger !== 'undefined';
 		if(!isFirefox){

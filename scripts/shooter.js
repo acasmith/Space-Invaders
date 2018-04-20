@@ -1,23 +1,20 @@
 //When shooter is destoryed on death, add all functions to prototype to aid memory management.
 function Shooter(){
+	this.width = Shooter.prototype.shooterGraphic.width;
+	this.height = Shooter.prototype.shooterGraphic.height;
 	this.x = width/2;
-	this.y = height - 15;
+	this.y = height - this.height;
 	this.myColor = 255;
-	this.bulletColor = 255;
-	this.currentTimeout;
+	this.bulletColor = "#39ff14";
 	this.bullet;
 	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
 	Shooter.prototype.shootSound.setVolume(0.1);
 	
 	/*****Inherited functions****/
 	
-	//Displays the object.
+	//Displays the sprite.
 	Shooter.prototype.display = function(){
-		fill(this.myColor);
-		stroke(this.myColor);
-		rect(this.x + 20, this.y - 8, 10, 20); //barrel
-		rect(this.x, this.y, 50, 15);	//turret
-		stroke(0);
+		image(Shooter.prototype.shooterGraphic, this.x, this.y);
 	}
 	
 	//If the function is at canvas edge and trying to move further, return.
@@ -33,7 +30,7 @@ function Shooter(){
 	//Creates a new bullet.
 	Shooter.prototype.fire = function(playerBulletManager){
 		if(playerBulletManager.isEmpty()){
-			playerBulletManager.add(new Bullet(this.x + 22.5, this.y - 8, this.bulletColor));
+			playerBulletManager.add(new Bullet(this.x + (this.width / 2) - (Bullet.prototype.width / 2), this.y, this.bulletColor));
 			var isFirefox = typeof InstallTrigger !== 'undefined';
 			if(!isFirefox){
 				Shooter.prototype.shootSound.play();	//Playing repeated sound results in memory leak in FF. Much research, still unsure why.
@@ -48,11 +45,7 @@ function Shooter(){
 		for(var i = 0; i < alienBulletManager.size(); i++){
 			var xDistance = alienBulletManager.getBullet(i).x - this.x;
 			var yDistance = alienBulletManager.getBullet(i).y - this.y;
-			if(xDistance >= 0 && xDistance <= 60 && yDistance >= 0 && yDistance <= 15){
-				clearTimeout(this.currentTimeout);
-				this.myColor = "red";
-				var self = this;
-				this.currentTimeout = setTimeout(function(){self.myColor = 255;}, 300);
+			if((xDistance >= 0 && xDistance <= this.width) && yDistance >= 0){
 				alienBulletManager.remove(i);
 				return true;
 			}
@@ -68,4 +61,11 @@ function Shooter(){
 	}
 	
 	/*******End inherited functions******/
+}	
+
+//Load assets
+window.addEventListener("load", addToPrototype);
+function addToPrototype(){
+	Shooter.prototype.shooterGraphic = loadImage("images/shooter.png");
+
 }

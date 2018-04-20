@@ -6,11 +6,13 @@ function Bullet(x, y, color){
 }
 
 /******Inherited Functions*********/
+Bullet.prototype.width = 3;
+Bullet.prototype.height = 10;
 
 //Displays the bullet.
 Bullet.prototype.display = function(){
 	fill(this.color);
-	rect(this.x, this.y, 5, 10);
+	rect(this.x, this.y, this.width, this.height);
 }
 
 //Updates y position, with the argument providing the direction (1 goes up, -1 goes down).
