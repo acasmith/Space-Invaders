@@ -1,6 +1,7 @@
 function AlienManager(){
 	this.aliens = new List();
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
+	this.alienPause = false;
 	
 	//Returns a list containing 6 alien objects.
 	this.createRow = function(yVal){
@@ -73,11 +74,15 @@ function AlienManager(){
 	//Orchestration function for calling regular alienManager functions.
 	//aliens move every 2 seconds, default framerate is 30hz.
 	this.manage = function(playerBulletManager, alienBulletManager){
-		if(frameCount % 60 === 0 && frameCount != 0){
-			this.alienControl();
-		}
-		if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
-			alienBulletManager.add(this.shoot());
+		if(!this.alienPause){
+			if(frameCount % 60 === 0 && frameCount != 0){
+				this.alienControl();
+			}
+			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
+				alienBulletManager.add(this.shoot());
+			}
+		} else{
+			this.targetFrame++;	//Prevents target frame from falling behind current frame.
 		}
 		this.detectCollisions(playerBulletManager);
 		this.display();
@@ -141,5 +146,10 @@ function AlienManager(){
 			}
 		}
 		return false;
+	}
+	
+	//Sets whether aliens are moving and shooting or not.
+	this.setPause = function(pause){
+		this.alienPause = pause; 
 	}
 }

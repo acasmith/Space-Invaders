@@ -1,13 +1,13 @@
 //Constructor function
 function Alien(x, y){
+	this.sprite = Alien.prototype.sprites.graphic0;
 	this.x = x;
 	this.y = y;
-	this.width = Alien.prototype.graphic0.width;
-	this.height = Alien.prototype.graphic0.height;
+	this.width = this.sprite.width;
+	this.height = this.sprite.height;
 	this.color = 255;
 	this.direction = false;
 	this.animationState = false;
-	this.sprite = Alien.prototype.graphic0;
 }
 
 /********Inherited Functions**********/
@@ -32,15 +32,15 @@ Alien.prototype.reset = function(){
 	this.x = this.direction ? this.x - 17.5 : this.x + 17.5;
 }
 
-//Returns true if the argument is within the aliens radius, otheriwse false.
+//Returns true if the argument is within the aliens hitbox, otheriwse false.
 Alien.prototype.detectCollision = function(bullet){
 	var xDistance = this.x - bullet.x;
 	var yDistance = this.y - bullet.y;
 	if((xDistance <= Bullet.prototype.width && xDistance + this.width >= 0) && 
 		(yDistance <= 0 && yDistance + this.height >= 0)){
-	var isFirefox = typeof InstallTrigger !== 'undefined';
+		var isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 		if(!isFirefox){
-			Shooter.prototype.shootSound.play();	//Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+			Shooter.prototype.shootSound.play();	
 		}
 		return true;
 	}
@@ -54,7 +54,7 @@ Alien.prototype.shoot = function(){
 
 //Changes sprite.
 Alien.prototype.changeSprite = function(){
-	this.sprite = this.animation ? Alien.prototype.graphic1 : Alien.prototype.graphic0;
+	this.sprite = this.animation ? Alien.prototype.sprites.graphic1 : Alien.prototype.sprites.graphic0;
 	this.animation = !this.animation;
 }
 
@@ -73,8 +73,7 @@ window.addEventListener("load", addToPrototype);
 function addToPrototype(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.graphic0 = loadImage("images/alien1.png");
-	Alien.prototype.graphic1 = loadImage("images/alien1.5.png");
+	Alien.prototype.sprites = {graphic0: loadImage("images/alien1.png"), graphic1: loadImage("images/alien1.5.png")};
 }
 
 /*********End inherited functions*******/
