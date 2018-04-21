@@ -3,7 +3,7 @@ function AlienManager(){
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
 	this.alienPause = false;
 	
-	//Returns a list containing 6 alien objects.
+	//Returns a list containing 11 alien objects.
 	this.createRow = function(yVal){
 		var row = new List();
 		for(var j = 0; j < 11; j++){
@@ -12,10 +12,10 @@ function AlienManager(){
 		return row;
 	}
 	
-	//Fills this.aliens with 4 rows of aliens.
+	//Fills this.aliens with 5 rows of aliens.
 	this.createAliens = function(){
-		for(var i = 0; i < 4; i++){
-			this.aliens.add(this.createRow(i * -50), i);
+		for(var i = 0; i < 5; i++){
+			this.aliens.add(this.createRow(i * -35), i);
 		}
 	}
 	
@@ -97,12 +97,6 @@ function AlienManager(){
 			var shootingAlienColumn = Math.floor(Math.random() * this.aliens.get(shootingAlienRow).size());
 			shootingAlien = this.aliens.get(shootingAlienRow).get(shootingAlienColumn);
 		}
-		//Catches when shootingAlien gets destroyed before it can shoot.
-		//Unsuitable for main loop because it results in continuously changing target frame.
-		/*if(shootingAlien === undefined){
-			console.log("recursive shoot");
-			return this.shoot();
-		};*/
 		return shootingAlien.shoot();
 	}
 	

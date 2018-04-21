@@ -49,7 +49,7 @@ Alien.prototype.detectCollision = function(bullet){
 
 //Alien fires a missle.
 Alien.prototype.shoot = function(){
-	return new Bullet(this.x, this.y, this.color);
+	return new Bullet(this.x + (this.width / 2), this.y + (this.height / 2), this.color);
 }
 
 //Changes sprite.

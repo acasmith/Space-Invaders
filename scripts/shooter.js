@@ -48,6 +48,7 @@ Shooter.prototype.detectCollisions = function(alienBulletManager){
 			return true;
 		}
 	}
+	return false;
 }
 
 //Organises operations when the player dies.
