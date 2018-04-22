@@ -4,18 +4,23 @@ function AlienManager(){
 	this.alienPause = false;
 	
 	//Returns a list containing 11 alien objects.
-	this.createRow = function(yVal){
+	this.createRow = function(constructor, yVal){
 		var row = new List();
 		for(var j = 0; j < 11; j++){
-			row.add(new Alien(140 + (40 * j), 200 + yVal), j);
+			row.add(new constructor(140 + (40 * j), 200 + yVal), j);
 		}
 		return row;
 	}
 	
-	//Fills this.aliens with 5 rows of aliens.
+	//Fills this.aliens with 5 rows of aliens. Gotta be a better way to do this than an if?
 	this.createAliens = function(){
 		for(var i = 0; i < 5; i++){
-			this.aliens.add(this.createRow(i * -35), i);
+			if(i < 2){
+				this.aliens.add(this.createRow(Alien, i * -35), i);
+			} else{
+				this.aliens.add(this.createRow(Alien2, i * -35), i);
+			}
+			
 		}
 	}
 	
@@ -54,12 +59,12 @@ function AlienManager(){
 	//Iterates over aliens comparing locations with all player bullets.
 	//If there is a collision, the alien and the bullet are removed.
 	this.detectCollisions = function(playerBulletManager){
-		var aliensDestroyed = 0;
+		var points = 0;
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.aliens.get(i).size(); j++){
 				for(var k = 0; k < playerBulletManager.size(); k++){
 					if(this.aliens.get(i).get(j).detectCollision(playerBulletManager.getBullet(k))){
-						aliensDestroyed++;
+						points += this.aliens.get(i).get(j).score;
 						this.aliens.get(i).remove(j);
 						playerBulletManager.remove(k);
 						j = Math.max(0, j - 1);	//To adjust for changing indeces from list removal.
@@ -68,7 +73,7 @@ function AlienManager(){
 				}
 			}
 		}
-		gameManager.updateScore(aliensDestroyed * 10);
+		gameManager.updateScore(points);
 	}
 	
 	//Orchestration function for calling regular alienManager functions.
@@ -130,7 +135,7 @@ function AlienManager(){
 		this.createAliens();
 	}
 	
-	//Checks if any aliens have gone below a threshold level to trigger a loss.
+	//Checks if any aliens have gone below a threshold level to trigger a loss. TODO: Check only lowest row. Use isEmpty.
 	this.aliensLanded = function(){
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.get(i).size(); j++){

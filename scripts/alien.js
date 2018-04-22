@@ -1,13 +1,25 @@
 //Constructor function
 function Alien(x, y){
-	this.sprite = Alien.prototype.sprites.graphic0;
 	this.x = x;
 	this.y = y;
-	this.width = this.sprite.width;
-	this.height = this.sprite.height;
-	this.color = 255;
-	this.direction = false;
-	this.animationState = false;
+}
+
+//Used to preload sprites and sounds. 
+//Adds a setup function that relies on those assets being loaded, hence being called in setup.
+Alien.prototype.preload = function(){
+	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
+	Alien.prototype.killedSound.setVolume(0.1);
+	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];
+	//Adds Alien specific values to the prototype.
+	Alien.prototype.setup = function(){
+		Alien.prototype.sprite = Alien.prototype.sprites[0];
+		Alien.prototype.width = Alien.prototype.sprite.width;
+		Alien.prototype.height = Alien.prototype.sprite.height;
+		Alien.prototype.score = 10;
+		Alien.prototype.bulletColor = 255;
+		Alien.prototype.direction = false;
+		Alien.prototype.animation = true;
+	}	
 }
 
 /********Inherited Functions**********/
@@ -21,7 +33,7 @@ Alien.prototype.display = function(){
 //Returns true when the alien moves out of bounds.
 Alien.prototype.move = function(){
 	this.x = this.direction ? this.x - 10: this.x + 10;
-	this.changeSprite();
+	this.changeSprite(this.sprites);
 	return this.isOutOfBounds();
 }
 
@@ -49,12 +61,12 @@ Alien.prototype.detectCollision = function(bullet){
 
 //Alien fires a missle.
 Alien.prototype.shoot = function(){
-	return new Bullet(this.x + (this.width / 2), this.y + (this.height / 2), this.color);
+	return new Bullet(this.x + (this.width / 2), this.y + (this.height / 2), this.bulletColor);
 }
 
 //Changes sprite.
-Alien.prototype.changeSprite = function(){
-	this.sprite = this.animation ? Alien.prototype.sprites.graphic1 : Alien.prototype.sprites.graphic0;
+Alien.prototype.changeSprite = function(spriteArr){
+	this.sprite = this.animation ? spriteArr[1] : spriteArr[0];
 	this.animation = !this.animation;
 }
 
@@ -64,16 +76,6 @@ Alien.prototype.isOutOfBounds = function(){
 		return true;
 	}
 	return false;
-}
-
-
-
-//Adds sound functions to prototype when page loads otherwise p5.sound is unaccessible.
-window.addEventListener("load", addToPrototype);
-function addToPrototype(){
-	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
-	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.sprites = {graphic0: loadImage("images/alien1.png"), graphic1: loadImage("images/alien1.5.png")};
 }
 
 /*********End inherited functions*******/
