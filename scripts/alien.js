@@ -9,7 +9,7 @@ function Alien(x, y){
 Alien.prototype.preload = function(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];
+	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];	
 	//Adds Alien specific values to the prototype.
 	Alien.prototype.setup = function(){
 		Alien.prototype.sprite = Alien.prototype.sprites[0];
@@ -18,8 +18,7 @@ Alien.prototype.preload = function(){
 		Alien.prototype.score = 10;
 		Alien.prototype.bulletColor = 255;
 		Alien.prototype.direction = false;
-		Alien.prototype.animation = true;
-	}	
+	}
 }
 
 /********Inherited Functions**********/
@@ -33,13 +32,11 @@ Alien.prototype.display = function(){
 //Returns true when the alien moves out of bounds.
 Alien.prototype.move = function(){
 	this.x = this.direction ? this.x - 10: this.x + 10;
-	this.changeSprite(this.sprites);
 	return this.isOutOfBounds();
 }
 
 //Moves the alien down and in the opposite x direction.
 Alien.prototype.reset = function(){
-	this.direction = !this.direction;
 	this.y += this.height;
 	this.x = this.direction ? this.x - 17.5 : this.x + 17.5;
 }
@@ -62,12 +59,6 @@ Alien.prototype.detectCollision = function(bullet){
 //Alien fires a missle.
 Alien.prototype.shoot = function(){
 	return new Bullet(this.x + (this.width / 2), this.y + (this.height / 2), this.bulletColor);
-}
-
-//Changes sprite.
-Alien.prototype.changeSprite = function(spriteArr){
-	this.sprite = this.animation ? spriteArr[1] : spriteArr[0];
-	this.animation = !this.animation;
 }
 
 //Detects if the alien is out of bounds.

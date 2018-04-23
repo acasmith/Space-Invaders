@@ -17,8 +17,10 @@ function AlienManager(){
 		for(var i = 0; i < 5; i++){
 			if(i < 2){
 				this.aliens.add(this.createRow(Alien, i * -35), i);
-			} else{
+			} else if(i < 4){
 				this.aliens.add(this.createRow(Alien2, i * -35), i);
+			} else{
+				this.aliens.add(this.createRow(Alien3, i * -35), i);
 			}
 			
 		}
@@ -35,10 +37,17 @@ function AlienManager(){
 		}
 	}
 	
-	//Moves the contents of aliens. If an element goes out of bounds, moves the contents
-	//vertically down and resumes moving in the opposite direction.
+	//Controls alien movement.
 	//N.B: Refactor this algo, there must be a way to avoid iterating twice on a reset?
 	this.alienControl = function(){
+		if(this.move()){
+			this.reset();
+		}
+	}
+	
+	//Moves the contents of aliens.
+	//Returns true after moving all aliens if one goes out of bounds.
+	this.move = function(){
 		var reset = false;
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.aliens.get(i).size(); j++){
@@ -47,11 +56,15 @@ function AlienManager(){
 				}
 			}
 		}
-		if(reset){
-			for(var i = 0; i < this.aliens.size(); i++){
-				for(var j = 0; j < this.aliens.get(i).size(); j++){
-					this.aliens.get(i).get(j).reset();
-				}
+		return reset;
+	}
+	
+	//Resets aliens by moving down the screen and changing the movement direction.
+	this.reset = function(){
+		Alien.prototype.direction = !Alien.prototype.direction;	//Way to do this without refering directly to Alien?
+		for(var i = 0; i < this.aliens.size(); i++){
+			for(var j = 0; j < this.aliens.get(i).size(); j++){
+				this.aliens.get(i).get(j).reset();
 			}
 		}
 	}
@@ -81,6 +94,7 @@ function AlienManager(){
 	this.manage = function(playerBulletManager, alienBulletManager){
 		if(!this.alienPause){
 			if(frameCount % 60 === 0 && frameCount != 0){
+				this.changeSprite();
 				this.alienControl();
 			}
 			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
@@ -91,6 +105,23 @@ function AlienManager(){
 		}
 		this.detectCollisions(playerBulletManager);
 		this.display();
+	}
+	
+	//Changes sprite. TODO: Gotta be a cleaner way to do this update.
+	//Sprite is inside prototype, so only want to grab 1 and change it.
+	//Don't want to just hardcode enemy references, keep it loosely coupled.
+	AlienManager.prototype.changeSprite = function(){
+		for(var i = 0; i < 5; i = i + 2){
+			var alien = this.aliens.get(i).get(0);
+			if(i != 4){	//Only 1 row of Alien3's.
+				alien = alien == undefined ? this.aliens.get(i + 1).get(0) : alien;
+			}
+			if(alien){
+				var spriteArr = alien.constructor.prototype.sprites;
+				alien.constructor.prototype.sprite = alien.constructor.prototype.sprite === spriteArr[0] ? spriteArr[1] : spriteArr[0];
+				i = i == 4 ? 3 : i;
+			}
+		}
 	}
 
 	//Sets the next frame to shoot on and tells a random alien to fire.
