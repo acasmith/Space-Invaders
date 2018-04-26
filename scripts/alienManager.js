@@ -2,6 +2,7 @@ function AlienManager(){
 	this.aliens = new List();
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
 	this.alienPause = false;
+	this.flyingSaucer = new FlyingSaucer(0, 0);
 	
 	//Returns a list containing 11 alien objects.
 	this.createRow = function(constructor, yVal){
@@ -28,8 +29,11 @@ function AlienManager(){
 	
 	
 	
-	//Displays the contents of aliens.
+	//Displays the contents of aliens and the flying saucer if present.
 	this.display = function(){
+		if(this.flyingSaucer){
+			this.flyingSaucer.display();
+		}
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.aliens.get(i).size(); j++){
 				this.aliens.get(i).get(j).display();
@@ -89,7 +93,7 @@ function AlienManager(){
 		gameManager.updateScore(points);
 	}
 	
-	//Orchestration function for calling regular alienManager functions.
+	//Orchestration function for calling regular alienManager functions. INCLUDE CHANGE SPRITES IN CLASSES!
 	//aliens move every 2 seconds, default framerate is 30hz.
 	this.manage = function(playerBulletManager, alienBulletManager){
 		if(!this.alienPause){
@@ -100,6 +104,11 @@ function AlienManager(){
 			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
 				alienBulletManager.add(this.shoot());
 			}
+			if(this.flyingSaucer && this.flyingSaucer.move()){
+				this.flyingSaucer = null;
+				console.log("Saucer removed!");
+			}
+
 		} else{
 			this.targetFrame++;	//Prevents target frame from falling behind current frame.
 		}
@@ -107,7 +116,7 @@ function AlienManager(){
 		this.display();
 	}
 	
-	//Changes sprite. TODO: Gotta be a cleaner way to do this update.
+	//Changes sprite. TODO: Gotta be a cleaner way to do this update. REFACTOR INTO CLASSES THEMSELVES, JUST CALL HERE/IN MANAGE.
 	//Sprite is inside prototype, so only want to grab 1 and change it.
 	//Don't want to just hardcode enemy references, keep it loosely coupled.
 	AlienManager.prototype.changeSprite = function(){
@@ -121,6 +130,10 @@ function AlienManager(){
 				alien.constructor.prototype.sprite = alien.constructor.prototype.sprite === spriteArr[0] ? spriteArr[1] : spriteArr[0];
 				i = i == 4 ? 3 : i;
 			}
+		}
+		if(this.flyingSaucer){
+			var spriteArr = this.flyingSaucer.sprites;
+			this.flyingSaucer.sprite = this.flyingSaucer.sprite == spriteArr[0] ? spriteArr[1] : spriteArr[0];
 		}
 	}
 
