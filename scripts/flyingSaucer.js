@@ -11,13 +11,16 @@ function FlyingSaucer(x, y){
 	
 }
 
+//Loads the sprites and sounds for FlyingSaucer.
 FlyingSaucer.prototype.preload = function(){
 	FlyingSaucer.prototype.sprites = [loadImage("images/flying-saucer.png"), loadImage("images/flying-saucer2.png")];
 }
 
+//Adds necessary elements to FlyingSaucer prototype.
 FlyingSaucer.prototype.setup = function(){
 	FlyingSaucer.prototype.sprite = FlyingSaucer.prototype.sprites[0];
 	FlyingSaucer.prototype.width = FlyingSaucer.prototype.sprite.width;
+	FlyingSaucer.prototype.height = FlyingSaucer.prototype.sprite.height;
 	FlyingSaucer.prototype.score = 50;
 }
 
@@ -26,7 +29,7 @@ FlyingSaucer.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
 }
 
-//Moves saucer. Returns true if the alien is out of bounds, else false.
+//Moves saucer. Returns true if the alien is out of bounds, else false. Different to Alien.
 FlyingSaucer.prototype.move = function(){
 	this.x = this.direction ? this.x + 3 : this.x - 3;
 	if(this.outOfBounds()){
@@ -35,7 +38,7 @@ FlyingSaucer.prototype.move = function(){
 	return false;
 }
 
-//Checks whether the saucer is out of bounds.
+//Checks whether the saucer is out of bounds. Different to Alien.
 FlyingSaucer.prototype.outOfBounds = function(){
 	if((this.direction && this.x >= width) || (!this.direction && this.x <= -this.width)){
 		return true;
@@ -43,9 +46,24 @@ FlyingSaucer.prototype.outOfBounds = function(){
 	return false;
 }
 
+//EXACTLY THE SAME FUNCTION AS IN ALIEN.
+FlyingSaucer.prototype.detectCollision = function(bullet){
+	var xDistance = this.x - bullet.x;
+	var yDistance = this.y - bullet.y;
+	if((xDistance <= Bullet.prototype.width && xDistance + this.width >= 0) && 
+		(yDistance <= 0 && yDistance + this.height >= 0)){
+		var isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+		if(!isFirefox){
+			Shooter.prototype.shootSound.play();	
+		}
+		return true;
+	}
+	return false;
+}
+
 //display (y)
 //move (y)
-//detectCollisions.
+//detectCollisions. (y)
 //direction. (y)
 //Change sprite. (y)
 //Out of bounds (y)

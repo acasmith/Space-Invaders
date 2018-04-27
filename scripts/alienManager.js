@@ -73,24 +73,30 @@ function AlienManager(){
 		}
 	}
 	
-	//Iterates over aliens comparing locations with all player bullets.
+	//Iterates over aliens comparing locations with all player bullets.	TODO: Look at refactoring this, common elements between Aliens and FlyingSaucer checks and responses.
 	//If there is a collision, the alien and the bullet are removed.
 	this.detectCollisions = function(playerBulletManager){
-		var points = 0;
-		for(var i = 0; i < this.aliens.size(); i++){
-			for(var j = 0; j < this.aliens.get(i).size(); j++){
-				for(var k = 0; k < playerBulletManager.size(); k++){
+		for(var k = 0; k < playerBulletManager.size(); k++){
+			//Check FlyingSaucer
+			if(this.flyingSaucer && this.flyingSaucer.detectCollision(playerBulletManager.getBullet(k))){
+				console.log("WELCOME TO EARF!");	//Put sound into class itself.
+				gameManager.updateScore(this.flyingSaucer.score);
+				this.flyingSaucer = null;
+				playerBulletManager.remove(k);
+				return;	//No player bullets exist anymore.
+			}
+			//Check Aliens.
+			for(var i = 0; i < this.aliens.size(); i++){
+				for(var j = 0; j < this.aliens.get(i).size(); j++){
 					if(this.aliens.get(i).get(j).detectCollision(playerBulletManager.getBullet(k))){
-						points += this.aliens.get(i).get(j).score;
+						gameManager.updateScore(this.aliens.get(i).get(j).score);
 						this.aliens.get(i).remove(j);
 						playerBulletManager.remove(k);
-						j = Math.max(0, j - 1);	//To adjust for changing indeces from list removal.
-						break;	//Current alien (j) no longer exists, so this loop is redundant.
+						return;	//No player bullet exists, so exit function.
 					}
 				}
 			}
 		}
-		gameManager.updateScore(points);
 	}
 	
 	//Orchestration function for calling regular alienManager functions. INCLUDE CHANGE SPRITES IN CLASSES!
@@ -110,9 +116,11 @@ function AlienManager(){
 			}
 
 		} else{
-			this.targetFrame++;	//Prevents target frame from falling behind current frame.
+			this.targetFrame++;	//Prevents target frame from falling behind current frame when paused.
 		}
-		this.detectCollisions(playerBulletManager);
+		if(!playerBulletManager.isEmpty()){
+			this.detectCollisions(playerBulletManager);
+		}
 		this.display();
 	}
 	
