@@ -10,6 +10,7 @@ function GameManager(){
 	this.playing;
 	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
+	this.shieldManager;
 	
 	this.startGame = function(){
 		this.playing = false;
@@ -24,10 +25,12 @@ function GameManager(){
 		this.lives = 3;
 		this.shooter = new Shooter();
 		this.alienManager = new AlienManager();
+		this.shieldManager = new ShieldManager();
 		this.playerBulletManager = new BulletManager(1);
 		this.alienBulletManager = new BulletManager(-1);
 		this.ui = new UI();
 		this.alienManager.createAliens();
+		this.shieldManager.createShields();
 	}
 	
 	//Resets the aliens and clears all active bullets.
@@ -47,6 +50,7 @@ function GameManager(){
 			this.alienBulletManager.manage();
 			this.playControls();
 			this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
+			this.shieldManager.display();
 			this.shooter.manage(this.alienManager, this.alienBulletManager);
 			this.ui.display(this.score, this.lives);
 			this.checkGameStatus();

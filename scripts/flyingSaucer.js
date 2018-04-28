@@ -14,6 +14,9 @@ function FlyingSaucer(x, y){
 //Loads the sprites and sounds for FlyingSaucer.
 FlyingSaucer.prototype.preload = function(){
 	FlyingSaucer.prototype.sprites = [loadImage("images/flying-saucer.png"), loadImage("images/flying-saucer2.png")];
+	//EXACTLY THE SAME AS ALIEN
+	FlyingSaucer.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
+	FlyingSaucer.prototype.killedSound.setVolume(0.1);
 }
 
 //Adds necessary elements to FlyingSaucer prototype.
@@ -67,4 +70,4 @@ FlyingSaucer.prototype.detectCollision = function(bullet){
 //direction. (y)
 //Change sprite. (y)
 //Out of bounds (y)
-//Random spawn, random direction.
+//Random spawn, random direction. (y)

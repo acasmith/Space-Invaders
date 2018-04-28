@@ -8,6 +8,7 @@ function preload(){
 	Alien2.prototype.preload();
 	Alien3.prototype.preload();
 	FlyingSaucer.prototype.preload();
+	Shield.prototype.preload();
 }
 
 function setup(){

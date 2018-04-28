@@ -2,7 +2,8 @@ function AlienManager(){
 	this.aliens = new List();
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
 	this.alienPause = false;
-	this.flyingSaucer = new FlyingSaucer(0, 0);
+	this.flyingSaucer;
+	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);
 	
 	//Returns a list containing 11 alien objects.
 	this.createRow = function(constructor, yVal){
@@ -100,27 +101,36 @@ function AlienManager(){
 	}
 	
 	//Orchestration function for calling regular alienManager functions. INCLUDE CHANGE SPRITES IN CLASSES!
-	//aliens move every 2 seconds, default framerate is 30hz.
 	this.manage = function(playerBulletManager, alienBulletManager){
+		//When game is not paused.
 		if(!this.alienPause){
+			//Every 60 second update alien sprites and move main alien pack.
 			if(frameCount % 60 === 0 && frameCount != 0){
 				this.changeSprite();
 				this.alienControl();
 			}
+			//Shoot when it's targetFrame.
 			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
 				alienBulletManager.add(this.shoot());
 			}
-			if(this.flyingSaucer && this.flyingSaucer.move()){
-				this.flyingSaucer = null;
-				console.log("Saucer removed!");
+			//If saucer is up, move it. If it goes out of bounds, remove it.
+			if(this.flyingSaucer){
+				if(this.flyingSaucer.move()){
+					this.flyingSaucer = null;
+				} 
+			} else if(frameCount === this.saucerFrame){ //if no saucer and it's saucer frame, spawn one.
+				this.spawnSaucer();
 			}
 
-		} else{
-			this.targetFrame++;	//Prevents target frame from falling behind current frame when paused.
+		} else{ //Prevents special frames from falling behind current frame when paused.
+			this.targetFrame++;	
+			this.saucerFrame++;
 		}
+		//If a players bullet is in play, see if it hits anything.
 		if(!playerBulletManager.isEmpty()){
 			this.detectCollisions(playerBulletManager);
 		}
+		//Draw updated state to the screen.
 		this.display();
 	}
 	
@@ -155,6 +165,13 @@ function AlienManager(){
 			shootingAlien = this.aliens.get(shootingAlienRow).get(shootingAlienColumn);
 		}
 		return shootingAlien.shoot();
+	}
+	
+	//Spawns a new FlyingSaucer with a random direction.
+	this.spawnSaucer = function(){
+		var xPos = Math.random() >= 0.5 ? width : 0;
+		this.flyingSaucer = new FlyingSaucer(xPos, 25);
+		this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);
 	}
 	
 	//Returns the total number of alien rows, including empty rows.
