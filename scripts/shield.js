@@ -2,7 +2,6 @@ function Shield(x, y){
 	this.sprite = Object.create(Shield.prototype.sprite);
 	this.x = x;
 	this.y = y;
-	this.topEdge = [];
 	this.bottomEdge = [];
 }
 
@@ -10,8 +9,61 @@ Shield.prototype.preload = function(){
 	Shield.prototype.sprite = loadImage("images/shield.png");
 }
 
+Shield.prototype.setup = function(){
+	Shield.prototype.topEdge = Shield.prototype.fillTop();
+}
+
 Shield.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
+}
+
+Shield.prototype.detectCollision = function(playerBulletManager){
+	//Check top.
+	for(var i = 0; i < this.topEdge.length; i++){
+		//find coord of pixel from index in pixArr.
+		var pixX = this.x + (this.topEdge[i] / 4) % this.sprite.width;
+		var pixY = this.y + Math.floor((this.topEdge[i] / 4) / this.sprite.width);
+		var bullet = playerBulletManager.getBullet(0);
+		if(bullet && bullet.x === pixX && bullet.y === pixY){
+			console.log("It's a hit!");
+		}
+		//Compare against coords of player bullet.
+	}
+	//Check bottom.
+}
+
+//Detects top edge of sprite, writes each pixels starting index in pixel array to topEdge.
+Shield.prototype.fillTop = function(){
+	this.sprite.loadPixels();
+	var topEdge = [];
+	var pixArr = this.sprite.pixels;
+	var pixWidth = this.sprite.width;
+	for(var i = 0; i < pixWidth; i++){
+		for(var j = 0; j < this.sprite.height; j++){
+			var currentIndex = (i * 4 ) + (pixWidth * j * 4); //(column) + (row).
+			var pixVal = pixArr[currentIndex] + pixArr[currentIndex + 1] + pixArr[currentIndex + 2];
+			if(pixVal > 0){
+				topEdge[i] = currentIndex;
+				break;	//Top found, move on to next column.
+			}
+		}
+	}
+	//this.colorEdge();
+	return topEdge;
+	//If top array is empty
+	//Iterate over array
+	//Go down rows until first non black element. ().
+}
+
+Shield.prototype.colorEdge = function(){
+	this.sprite.loadPixels();
+	var pixArr = this.sprite.pixels;
+	for(var i = 0; i < this.topEdge.length; i++){
+		this.sprite.pixels[this.topEdge[i]] = 255;
+		this.sprite.pixels[this.topEdge[i + 1]] = 255;
+		this.sprite.pixels[this.topEdge[i + 2]] = 255;
+	}
+	this.sprite.updatePixels();
 }
 //Detect hits - alien AND player.
 //Take damage - random amount in all 4 directions.

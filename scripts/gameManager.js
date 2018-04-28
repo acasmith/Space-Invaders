@@ -50,7 +50,7 @@ function GameManager(){
 			this.alienBulletManager.manage();
 			this.playControls();
 			this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shieldManager.display();
+			this.shieldManager.manage(this.playerBulletManager);
 			this.shooter.manage(this.alienManager, this.alienBulletManager);
 			this.ui.display(this.score, this.lives);
 			this.checkGameStatus();

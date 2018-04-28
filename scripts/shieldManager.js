@@ -24,4 +24,16 @@ ShieldManager.prototype.display = function(){
 	}
 }
 
+ShieldManager.prototype.detectCollisions = function(playerBulletManager){
+	console.log("called");
+	for(var i = 0; i < this.shields.length; i++){
+		this.shields[i].detectCollision(playerBulletManager);
+	}
+}
+
+ShieldManager.prototype.manage = function(playerBulletManager){
+	this.display();
+	this.detectCollisions(playerBulletManager);
+}
+
 //Set fail state for when aliens get to shield y val.
