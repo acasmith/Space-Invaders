@@ -2,6 +2,7 @@ function ShieldManager(){
 	this.shields = [];
 }
 
+//Creates a new setup of shields.
 ShieldManager.prototype.createShields = function(){
 	//this.shields[0] = new Shield(30, 400);
 	for(var i = 0; i < 5; i++){
@@ -18,19 +19,23 @@ ShieldManager.prototype.createShields = function(){
 	}
 }
 
+//Displays all objects in shields[].
 ShieldManager.prototype.display = function(){
 	for(var i = 0; i < this.shields.length; i++){
 		this.shields[i].display();
 	}
 }
 
+//Calls detectCollision on all shield objects in shields[].
 ShieldManager.prototype.detectCollisions = function(playerBulletManager){
-	console.log("called");
-	for(var i = 0; i < this.shields.length; i++){
-		this.shields[i].detectCollision(playerBulletManager);
+	if(!playerBulletManager.isEmpty()){
+		for(var i = 0; i < this.shields.length; i++){
+			this.shields[i].detectCollision(playerBulletManager);
+		}
 	}
 }
 
+//Orchestration function for common ShieldManager functions.
 ShieldManager.prototype.manage = function(playerBulletManager){
 	this.display();
 	this.detectCollisions(playerBulletManager);

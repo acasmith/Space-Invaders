@@ -5,18 +5,23 @@ function Shield(x, y){
 	this.bottomEdge = [];
 }
 
+//Preloads images and sounds for shield objects.
 Shield.prototype.preload = function(){
 	Shield.prototype.sprite = loadImage("images/shield.png");
 }
 
+//Organises necessary pre-game setup functionalities for shield objects.
 Shield.prototype.setup = function(){
 	Shield.prototype.topEdge = Shield.prototype.fillTop();
+	Shield.prototype.colorEdge()
 }
 
+//Displays the shields sprite.
 Shield.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
 }
 
+//Detects collisions between player bullets and the shield.
 Shield.prototype.detectCollision = function(playerBulletManager){
 	//Check top.
 	for(var i = 0; i < this.topEdge.length; i++){
@@ -24,7 +29,30 @@ Shield.prototype.detectCollision = function(playerBulletManager){
 		var pixX = this.x + (this.topEdge[i] / 4) % this.sprite.width;
 		var pixY = this.y + Math.floor((this.topEdge[i] / 4) / this.sprite.width);
 		var bullet = playerBulletManager.getBullet(0);
-		if(bullet && bullet.x === pixX && bullet.y === pixY){
+		/*this.sprite.pixels[this.topEdge[i]] = 255;
+		this.sprite.pixels[this.topEdge[i] + 1] = 0;
+		this.sprite.pixels[this.topEdge[i] + 2] = 0;*/
+		ellipse(pixX, pixY, 1, 1);
+		//this.sprite.updatePixels();
+		/*console.log("pixX: " + pixX + ", pixY" + pixY);
+		console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
+		noLoop();
+		return;*/
+		/*var xDiff = bullet.x - pixX;
+		var yDiff = bullet.y - pixY;
+		if(bullet.x - pixX >= 0 && bullet.x - pixX <= bullet.width){
+			console.log("x's equal");
+			console.log("pixX: " + pixX + ", pixY" + pixY);
+			console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
+		}
+		if(bullet.y == pixY){
+			console.log("y's equal");
+			console.log("pixX: " + pixX + ", pixY" + pixY);
+			console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
+		}*/
+		if(bullet &&
+			(bullet.x - pixX >= 0 && bullet.x - pixX <= bullet.width) && 
+			pixY - bullet.y >= 0 && pixY - bullet.y <= bullet.length){
 			console.log("It's a hit!");
 		}
 		//Compare against coords of player bullet.
@@ -55,6 +83,7 @@ Shield.prototype.fillTop = function(){
 	//Go down rows until first non black element. ().
 }
 
+//Iterates over topEdge and changes the pixel color to highlight it.
 Shield.prototype.colorEdge = function(){
 	this.sprite.loadPixels();
 	var pixArr = this.sprite.pixels;
