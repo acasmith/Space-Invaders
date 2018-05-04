@@ -27,7 +27,7 @@ ShieldManager.prototype.display = function(){
 }
 
 //Calls detectCollision on all shield objects in shields[].
-ShieldManager.prototype.detectCollisions = function(playerBulletManager){
+ShieldManager.prototype.detectCollisions = function(playerBulletManager, alienBulletManager){
 	if(!playerBulletManager.isEmpty()){
 		for(var i = 0; i < this.shields.length; i++){
 			if(this.shields[i].detectCollision(playerBulletManager)){
