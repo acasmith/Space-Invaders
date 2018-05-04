@@ -1,3 +1,9 @@
+//TODO
+////fillBottom()
+////Player bullet detection switched to bottom.
+////alien bullet detection along top.
+////Remove bullet.
+////Finish onHit().
 function Shield(x, y){
 	this.sprite = Object.create(Shield.prototype.sprite);
 	this.x = x;
@@ -13,7 +19,7 @@ Shield.prototype.preload = function(){
 //Organises necessary pre-game setup functionalities for shield objects.
 Shield.prototype.setup = function(){
 	Shield.prototype.topEdge = Shield.prototype.fillTop();
-	Shield.prototype.colorEdge()
+	Shield.prototype.colorEdge();
 }
 
 //Displays the shields sprite.
@@ -22,6 +28,9 @@ Shield.prototype.display = function(){
 }
 
 //Detects collisions between player bullets and the shield. //Refactor and pass bullet details as args, return true if hit.
+//Bullet moves in steps of -10, that's why certain pixels are detecting collision on the y axis.
+//Hit detection therefore can occur before or after bullet passes pixel. I've opted to go for before (within a turns move)
+//so it always picks up only the first collision, not multiple collisions when the bullet over shoots.
 Shield.prototype.detectCollision = function(playerBulletManager){
 	//Check top.
 	console.log("*************New Shield****************");
@@ -30,36 +39,11 @@ Shield.prototype.detectCollision = function(playerBulletManager){
 		var pixX = this.x + (this.topEdge[i] / 4) % this.sprite.width;
 		var pixY = this.y + Math.floor((this.topEdge[i] / 4) / this.sprite.width);
 		var bullet = playerBulletManager.getBullet(0);
-		/*this.sprite.pixels[this.topEdge[i]] = 255;
-		this.sprite.pixels[this.topEdge[i] + 1] = 0;
-		this.sprite.pixels[this.topEdge[i] + 2] = 0;*/
-		//ellipse(pixX, pixY, 1, 1);
-		//this.sprite.updatePixels();
-		/*console.log("pixX: " + pixX + ", pixY" + pixY);
-		console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
-		noLoop();
-		return;*/
-		/*var xDiff = bullet.x - pixX;
-		var yDiff = bullet.y - pixY;
-		*/
-		//Check rounds up to give player 0.5px benefit.
-		//Ie. if bullet.x === 0.5 and shield pixel === 0, this will not hit.
-		/*if(bullet.x - pixX >= -0.5 && bullet.x - pixX < 0.5){
-			console.log("!!!!!!!!!!!!!!!!!!x's equal!!!!!!!!!!!!");
-			console.log("////////pixel//////");
-			console.log("pixX: " + pixX + ", pixY" + pixY);
-			console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
-		}*/
 		
-		if(bullet.y - pixY === 0){
-			console.log("!!!!!!!!!!!!!!!y's equal!!!!!!!!!!!!!!!");
-			bullet.color = "red";
-			bullet.display();
-			noLoop();
-		}
-		/*if(bullet &&
-			(bullet.x - pixX >= -0.5 && bullet.x - pixX < 0.5) &&
-			(bullet.y - pixY >= -0.5 && bullet.y - pixY < 0.5)){
+		
+		if(bullet &&
+			(bullet.x - pixX >= -(0.5 + bullet.width) && bullet.x - pixX < 0.5) &&	//x detection rounds up when pixels are fractional.
+			(bullet.y - pixY <= 10)){
 				console.log("It's a hit!");
 				console.log("pixX: " + pixX + ", pixY" + pixY);
 				console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
@@ -67,17 +51,13 @@ Shield.prototype.detectCollision = function(playerBulletManager){
 				bullet.display();
 				noLoop();
 			
-		}*/
-		/*if(bullet &&
-			(bullet.x - pixX >= 0 && bullet.x - pixX <= bullet.width) && 
-			pixY - bullet.y >= 0 && pixY - bullet.y <= bullet.length){
-			console.log("It's a hit!");
-		}*/
+		}
 		//Compare against coords of player bullet.
 	}
-	//noLoop();
 	//Check bottom.
 }
+
+Shield.prototype.onHit = function(){};
 
 //Detects top edge of sprite, writes each pixels starting index in pixel array to topEdge.
 Shield.prototype.fillTop = function(){

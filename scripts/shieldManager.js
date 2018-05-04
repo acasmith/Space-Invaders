@@ -30,7 +30,11 @@ ShieldManager.prototype.display = function(){
 ShieldManager.prototype.detectCollisions = function(playerBulletManager){
 	if(!playerBulletManager.isEmpty()){
 		for(var i = 0; i < this.shields.length; i++){
-			this.shields[i].detectCollision(playerBulletManager);
+			if(this.shields[i].detectCollision(playerBulletManager)){
+				playerBulletManager.remove(0);
+				this.shields[i].onHit();
+				break;
+			}
 		}
 	}
 }
