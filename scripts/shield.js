@@ -21,9 +21,10 @@ Shield.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
 }
 
-//Detects collisions between player bullets and the shield.
+//Detects collisions between player bullets and the shield. //Refactor and pass bullet details as args, return true if hit.
 Shield.prototype.detectCollision = function(playerBulletManager){
 	//Check top.
+	console.log("*************New Shield****************");
 	for(var i = 0; i < this.topEdge.length; i++){
 		//find coord of pixel from index in pixArr.
 		var pixX = this.x + (this.topEdge[i] / 4) % this.sprite.width;
@@ -32,7 +33,7 @@ Shield.prototype.detectCollision = function(playerBulletManager){
 		/*this.sprite.pixels[this.topEdge[i]] = 255;
 		this.sprite.pixels[this.topEdge[i] + 1] = 0;
 		this.sprite.pixels[this.topEdge[i] + 2] = 0;*/
-		ellipse(pixX, pixY, 1, 1);
+		//ellipse(pixX, pixY, 1, 1);
 		//this.sprite.updatePixels();
 		/*console.log("pixX: " + pixX + ", pixY" + pixY);
 		console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
@@ -40,23 +41,41 @@ Shield.prototype.detectCollision = function(playerBulletManager){
 		return;*/
 		/*var xDiff = bullet.x - pixX;
 		var yDiff = bullet.y - pixY;
-		if(bullet.x - pixX >= 0 && bullet.x - pixX <= bullet.width){
-			console.log("x's equal");
-			console.log("pixX: " + pixX + ", pixY" + pixY);
-			console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
-		}
-		if(bullet.y == pixY){
-			console.log("y's equal");
+		*/
+		//Check rounds up to give player 0.5px benefit.
+		//Ie. if bullet.x === 0.5 and shield pixel === 0, this will not hit.
+		/*if(bullet.x - pixX >= -0.5 && bullet.x - pixX < 0.5){
+			console.log("!!!!!!!!!!!!!!!!!!x's equal!!!!!!!!!!!!");
+			console.log("////////pixel//////");
 			console.log("pixX: " + pixX + ", pixY" + pixY);
 			console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
 		}*/
-		if(bullet &&
+		
+		if(bullet.y - pixY === 0){
+			console.log("!!!!!!!!!!!!!!!y's equal!!!!!!!!!!!!!!!");
+			bullet.color = "red";
+			bullet.display();
+			noLoop();
+		}
+		/*if(bullet &&
+			(bullet.x - pixX >= -0.5 && bullet.x - pixX < 0.5) &&
+			(bullet.y - pixY >= -0.5 && bullet.y - pixY < 0.5)){
+				console.log("It's a hit!");
+				console.log("pixX: " + pixX + ", pixY" + pixY);
+				console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
+				bullet.color = "red";
+				bullet.display();
+				noLoop();
+			
+		}*/
+		/*if(bullet &&
 			(bullet.x - pixX >= 0 && bullet.x - pixX <= bullet.width) && 
 			pixY - bullet.y >= 0 && pixY - bullet.y <= bullet.length){
 			console.log("It's a hit!");
-		}
+		}*/
 		//Compare against coords of player bullet.
 	}
+	//noLoop();
 	//Check bottom.
 }
 
