@@ -87,7 +87,7 @@ function GameManager(){
 	}
 	
 	//Pauses alien activity and updates lives.
-	//Resets shooter and alienActivity after 3 seconds.
+	//Resets shooter and alienActivity after 2.5 seconds.
 	this.playerDeath = function(){
 		this.alienManager.setPause(true);
 		this.updateLives(-1);
@@ -105,7 +105,7 @@ function GameManager(){
 		text("PAUSED", width/2, height/2);
 	}
 	
-	//controls N.B fire control still in sketch.
+	//Movement controls controls.
 	this.playControls = function(){
 		if(!this.shooter.dead){
 			if(keyIsDown(LEFT_ARROW) || keyIsDown(65)){
@@ -119,7 +119,7 @@ function GameManager(){
 
 }
 
-//Event handler called whenever a key is pressed.
+//Additional controls invoked by event handler called whenever a key is pressed.
 function keyPressed(){
 	if(gameManager.playing){
 		//Press Space for shoot
@@ -137,7 +137,7 @@ function keyPressed(){
 	}	
 }
 
-//Event handler called whenever a key is released.
+//Additional control invoked by event handler called whenever a key is released.
 function keyReleased(){
 	if(gameManager.playing){
 		//Press P for pause.

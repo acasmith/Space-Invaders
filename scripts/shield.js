@@ -1,13 +1,14 @@
 //TODO
-////fillBottom()
-////Player bullet detection switched to bottom. Ensure actual pixel hit has lowest y value.
+//Random damage to shield: Change to calculate random number width, random number height which is blast radius. Then randomise to shape impact.
 ////alien bullet detection along top.
 ////Remove bullet.
 ////Finish onHit().
 function Shield(x, y){
-	this.sprite = Object.create(Shield.prototype.sprite);
+	this.sprite = loadImage("images/shield.png");
 	this.x = x;
 	this.y = y;
+	this.topEdge = Shield.prototype.topEdge;
+	this.bottomEdge = Shield.prototype.bottomEdge;
 }
 
 //Preloads images and sounds for shield objects.
@@ -19,8 +20,8 @@ Shield.prototype.preload = function(){
 Shield.prototype.setup = function(){
 	Shield.prototype.topEdge = Shield.prototype.fillTop();
 	Shield.prototype.bottomEdge = Shield.prototype.fillBottom();
-	Shield.prototype.colorEdge(Shield.prototype.topEdge);
-	Shield.prototype.colorEdge(Shield.prototype.bottomEdge);
+	//Shield.prototype.colorEdge(Shield.prototype.topEdge);
+	//Shield.prototype.colorEdge(Shield.prototype.bottomEdge);
 }
 
 //Displays the shields sprite.
@@ -39,28 +40,57 @@ Shield.prototype.detectCollision = function(playerBulletManager, alienBulletMana
 	console.log("*************New Shield****************");
 	for(var i = 0; i < this.bottomEdge.length; i++){
 		//find coord of pixel from index in pixArr.
-		var pixX = this.x + (this.topEdge[i] / 4) % this.sprite.width;
-		var pixY = this.y + Math.floor((this.topEdge[i] / 4) / this.sprite.width);
+		var pixX = this.x + (this.bottomEdge[i] / 4) % this.sprite.width;
+		var pixY = this.y + Math.floor((this.bottomEdge[i] / 4) / this.sprite.width);
 		var bullet = playerBulletManager.getBullet(0);
-		
-		
-		if(bullet &&
-			(bullet.x - pixX >= -(0.5 + bullet.width) && bullet.x - pixX < 0.5) &&	//x detection rounds up when pixels are fractional.
-			(bullet.y - pixY <= 10)){
-				console.log("It's a hit!");
-				console.log("pixX: " + pixX + ", pixY" + pixY);
-				console.log("bullet.x: " + bullet.x + ", bullet.y" + bullet.y);
-				bullet.color = "red";
-				bullet.display();
-				noLoop();
-			
+		//Find differences in values
+		var xDiff = pixX - bullet.x;
+		var yDiff = bullet.y - pixY;
+		//Check for collision.
+		if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
+			console.log("x's aligned!");
+			if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
+				console.log("Hit!");
+				this.onHit(i, 0, 0, 0.2);
+				return true;
+			}
 		}
-		//Compare against coords of player bullet.
 	}
+	//noLoop();
 	//Check bottom.
 }
 
-Shield.prototype.onHit = function(){};
+//Deals with collision behaviour.
+//Destroys the original pixel that is hit.
+//For all pixels surrounding the orignal, a roll is made to see if that is also destroyed.
+//If so, this process if called recursively, but with a reduced chance for adjacent pixel destruction.
+Shield.prototype.onHit = function(originalPixel, addX, addY, threshold){
+	for(var i = -1; i < 2; i++){
+		for(var j = -3; j < 4; j++){
+			if(i == 0 && j == 0){
+				this.destroyPixel(originalPixel, addX, addY);
+			} else{
+				if(Math.random() > threshold){
+					this.onHit(originalPixel, addX + i, addY + j, threshold / 0.2);
+				}
+			}
+		}
+	}
+	this.topEdge = this.fillTop();
+	this.bottomEdge = this.fillBottom();
+	this.colorEdge(this.topEdge);
+	this.colorEdge(this.bottomEdge);
+};
+
+//Sets the pixel to black, indicating destruction. It will not be included in future hit detections.
+Shield.prototype.destroyPixel = function(i, addX, addY){
+	this.sprite.loadPixels();
+	var additionalPixels = (addX * 4) + (addY * this.sprite.width * 4);
+	this.sprite.pixels[this.bottomEdge[i] + additionalPixels] = 0;
+	this.sprite.pixels[this.bottomEdge[i] + additionalPixels + 1] = 0;
+	this.sprite.pixels[this.bottomEdge[i] + additionalPixels + 2] = 0;
+	this.sprite.updatePixels();
+}
 
 //Detects top edge of sprite, writes each pixels starting index in pixel array to an array.
 //Returns the array containing top edge pixel indeces.
