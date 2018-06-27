@@ -50,7 +50,7 @@ function GameManager(){
 			this.alienBulletManager.manage();
 			this.playControls();
 			this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shieldManager.manage(this.playerBulletManager);
+			this.shieldManager.manage(this.playerBulletManager, this.alienBulletManager);
 			this.shooter.manage(this.alienManager, this.alienBulletManager);
 			this.ui.display(this.score, this.lives);
 			this.checkGameStatus();
@@ -124,11 +124,11 @@ function keyPressed(){
 	if(gameManager.playing){
 		//Press Space for shoot
 		if(keyCode === 32){
-		gameManager.shooter.fire(gameManager.playerBulletManager);
+			gameManager.shooter.fire(gameManager.playerBulletManager);
 		}
 	} else {
 		if(keyCode === 87 || keyCode === 38){
-		gameManager.menu.changeSelection(-1);
+			gameManager.menu.changeSelection(-1);
 		} else if(keyCode === 83 || keyCode === 40){
 			gameManager.menu.changeSelection(1);
 		} else if(keyCode === 13 || keyCode === 32){

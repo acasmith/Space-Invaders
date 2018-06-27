@@ -1,8 +1,5 @@
 //TODO
-//Random damage to shield: Change to calculate random number width, random number height which is blast radius. Then randomise to shape impact.
-////alien bullet detection along top.
-////Remove bullet.
-////Finish onHit().
+////alien bullet destruction of TOP of shield.
 function Shield(x, y){
 	this.sprite = loadImage("images/shield.png");
 	this.x = x;
@@ -20,8 +17,6 @@ Shield.prototype.preload = function(){
 Shield.prototype.setup = function(){
 	Shield.prototype.topEdge = Shield.prototype.fillTop();
 	Shield.prototype.bottomEdge = Shield.prototype.fillBottom();
-	//Shield.prototype.colorEdge(Shield.prototype.topEdge);
-	//Shield.prototype.colorEdge(Shield.prototype.bottomEdge);
 }
 
 //Displays the shields sprite.
@@ -35,7 +30,7 @@ Shield.prototype.display = function(){
 //so it always picks up only the first collision, not multiple collisions when the bullet over shoots.
 
 //FIND GENERAL WAY TO HAVE 1 FUNCTION FOR BOTH PLAYER AND ALIEN BULLETS. Should be it's own function called from here.
-Shield.prototype.detectCollision = function(playerBulletManager, alienBulletManager){
+/*Shield.prototype.detectCollision = function(playerBulletManager, alienBulletManager){
 	//Check top.
 	console.log("*************New Shield****************");
 	for(var i = 0; i < this.bottomEdge.length; i++){
@@ -58,37 +53,108 @@ Shield.prototype.detectCollision = function(playerBulletManager, alienBulletMana
 	}
 	//noLoop();
 	//Check bottom.
-}
+}*/
 
-//Deals with collision behaviour.
-//Destroys the original pixel that is hit.
-//For all pixels surrounding the orignal, a roll is made to see if that is also destroyed.
-//If so, this process if called recursively, but with a reduced chance for adjacent pixel destruction.
-Shield.prototype.onHit = function(originalPixel, addX, addY, threshold){
-	for(var i = -1; i < 2; i++){
-		for(var j = -3; j < 4; j++){
-			if(i == 0 && j == 0){
-				this.destroyPixel(originalPixel, addX, addY);
-			} else{
-				if(Math.random() > threshold){
-					this.onHit(originalPixel, addX + i, addY + j, threshold / 0.2);
+//Optimise!
+////First check if bullet is anywhere near the shield. If not, skip.
+	////Get bullet origin
+	////Get shield origin.
+	////If shield origin + shield width < bullet.x it misses so skip.
+	////If shield origin + bullet.width + 0.5 > bullet.x it misses so skip.
+	
+//Abstracted version.
+Shield.prototype.detectCollision = function(bulletManager, attacker){
+	//Get a bullet
+	for(var i = 0; i < bulletManager.size(); i++){
+		var bullet = bulletManager.getBullet(i);
+		//Check bullet is within shield bounds
+		if(bullet.x + bullet.width + 0.5 >= this.x && bullet.x - 0.5 < this.x + this.sprite.width){
+			var edgeArr = attacker === "alien" ? this.topEdge : this.bottomEdge;
+			for(var j = 0; j < edgeArr.length; j++){
+				//find coord of pixel from index in pixArr.
+				var pixX = this.x + (edgeArr[j] / 4) % this.sprite.width;
+				var pixY = this.y + Math.floor((edgeArr[j] / 4) / this.sprite.width);
+				//Find differences in values
+				var xDiff = pixX - bullet.x;
+				var yDiff = bullet.y - pixY;
+				//Check for collision.
+				if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
+					if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
+						this.onHit(j, 0, 0, 0.2);
+						return i;
+					}
+				}
+			}
+		}	
+	}
+	return -1;
+	//noLoop();
+	//Check bottom.
+}	
+	
+	
+
+
+//Abstracted version.
+/*Shield.prototype.detectCollision = function(bulletManager, attacker){
+	var edgeArr = attacker === "alien" ? this.topEdge : this.bottomEdge;
+	for(var i = 0; i < edgeArr.length; i++){
+		//find coord of pixel from index in pixArr.
+		var pixX = this.x + (edgeArr[i] / 4) % this.sprite.width;
+		var pixY = this.y + Math.floor((edgeArr[i] / 4) / this.sprite.width);
+		for(var j = 0; j < bulletManager.size(); j++){
+			var bullet = bulletManager.getBullet(j);
+			//Find differences in values
+			var xDiff = pixX - bullet.x;
+			var yDiff = bullet.y - pixY;
+			//Check for collision.
+			if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
+				if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
+					this.onHit(i, 0, 0, 0.2);
+					return j;
 				}
 			}
 		}
 	}
+	return -1;
+	//noLoop();
+	//Check bottom.
+}*/
+
+//Provides collision behaviour.
+//Circular area around collision point is destroyed.
+//The circle radius is randomised, with some additional "noise" to prevent perfect circles.
+Shield.prototype.onHit = function(originalPixel){
+	var blastRadius = Math.floor(Math.random() * 5) + 6;
+	var hitPixels = [];
+	
+	for(var i = blastRadius * -1; i < blastRadius + Math.random() * 5; i++){
+		for(var j = blastRadius * -1; j < blastRadius + Math.random() * 5 + 5; j++){
+			if(i*i + j*j <= blastRadius*blastRadius &&
+				originalPixel + i >= 0 && originalPixel + i < this.sprite.width){
+				hitPixels.push(i);
+				hitPixels.push(j);
+			}
+		}
+	}
+	this.destroyPixel(originalPixel, hitPixels);
+	
+	//Fill top/bottom arrays for new shield shape.
 	this.topEdge = this.fillTop();
 	this.bottomEdge = this.fillBottom();
-	this.colorEdge(this.topEdge);
-	this.colorEdge(this.bottomEdge);
+	//this.colorEdge(this.topEdge);
+	//this.colorEdge(this.bottomEdge);
 };
 
 //Sets the pixel to black, indicating destruction. It will not be included in future hit detections.
-Shield.prototype.destroyPixel = function(i, addX, addY){
+Shield.prototype.destroyPixel = function(originalPixel, hitPixels){
 	this.sprite.loadPixels();
-	var additionalPixels = (addX * 4) + (addY * this.sprite.width * 4);
-	this.sprite.pixels[this.bottomEdge[i] + additionalPixels] = 0;
-	this.sprite.pixels[this.bottomEdge[i] + additionalPixels + 1] = 0;
-	this.sprite.pixels[this.bottomEdge[i] + additionalPixels + 2] = 0;
+	for(var i = 0; i < hitPixels.length; i = i + 2){
+		var additionalPixels = (hitPixels[i] * 4) - (hitPixels[i + 1] * this.sprite.width * 4);
+		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels] = 0;
+		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels + 1] = 0;
+		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels + 2] = 0;
+	}
 	this.sprite.updatePixels();
 }
 
@@ -146,9 +212,7 @@ Shield.prototype.colorEdge = function(edgeArr){
 	for(var i = 0; i < edgeArr.length; i++){
 		this.sprite.pixels[edgeArr[i]] = 255;
 		this.sprite.pixels[edgeArr[i + 1]] = 255;
-		this.sprite.pixels[edgeArr[i + 2]] = 255;
+		this.sprite.pixels[edgeArr[i + 2]] = 0;
 	}
 	this.sprite.updatePixels();
 }
-//Detect hits - alien AND player.
-//Take damage - random amount in all 4 directions.

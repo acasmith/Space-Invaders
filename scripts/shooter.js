@@ -28,7 +28,7 @@ Shooter.prototype.move = function(left){
 
 //Creates a new bullet.
 Shooter.prototype.fire = function(playerBulletManager){
-	if(playerBulletManager.isEmpty()){
+	if(!this.dead && playerBulletManager.isEmpty()){
 		playerBulletManager.add(new Bullet(this.x + (this.width / 2) - (Bullet.prototype.width / 2), this.y, this.bulletColor));
 		if(!gameManager.isFirefox){
 			Shooter.prototype.shootSound.play();	
