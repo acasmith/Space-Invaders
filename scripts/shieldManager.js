@@ -42,9 +42,9 @@ ShieldManager.prototype.detectCollisions = function(bulletManager, attacker){
 
 //Orchestration function for common ShieldManager functions.
 ShieldManager.prototype.manage = function(playerBulletManager, alienBulletManager){
-	this.display();
 	this.detectCollisions(playerBulletManager, "player");
 	this.detectCollisions(alienBulletManager, "alien");
+	this.display();
 }
 
 //Set fail state for when aliens get to shield y val.

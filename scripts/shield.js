@@ -24,45 +24,10 @@ Shield.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
 }
 
-//Detects collisions between player bullets and the shield. //Refactor and pass bullet details as args, return true if hit.
+//Detects collisions between player bullets and the shield.
 //Bullet moves in steps of -10, that's why certain pixels are detecting collision on the y axis.
 //Hit detection therefore can occur before or after bullet passes pixel. I've opted to go for before (within a turns move)
 //so it always picks up only the first collision, not multiple collisions when the bullet over shoots.
-
-//FIND GENERAL WAY TO HAVE 1 FUNCTION FOR BOTH PLAYER AND ALIEN BULLETS. Should be it's own function called from here.
-/*Shield.prototype.detectCollision = function(playerBulletManager, alienBulletManager){
-	//Check top.
-	console.log("*************New Shield****************");
-	for(var i = 0; i < this.bottomEdge.length; i++){
-		//find coord of pixel from index in pixArr.
-		var pixX = this.x + (this.bottomEdge[i] / 4) % this.sprite.width;
-		var pixY = this.y + Math.floor((this.bottomEdge[i] / 4) / this.sprite.width);
-		var bullet = playerBulletManager.getBullet(0);
-		//Find differences in values
-		var xDiff = pixX - bullet.x;
-		var yDiff = bullet.y - pixY;
-		//Check for collision.
-		if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
-			console.log("x's aligned!");
-			if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
-				console.log("Hit!");
-				this.onHit(i, 0, 0, 0.2);
-				return true;
-			}
-		}
-	}
-	//noLoop();
-	//Check bottom.
-}*/
-
-//Optimise!
-////First check if bullet is anywhere near the shield. If not, skip.
-	////Get bullet origin
-	////Get shield origin.
-	////If shield origin + shield width < bullet.x it misses so skip.
-	////If shield origin + bullet.width + 0.5 > bullet.x it misses so skip.
-	
-//Abstracted version.
 Shield.prototype.detectCollision = function(bulletManager, attacker){
 	//Get a bullet
 	for(var i = 0; i < bulletManager.size(); i++){
@@ -80,7 +45,7 @@ Shield.prototype.detectCollision = function(bulletManager, attacker){
 				//Check for collision.
 				if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
 					if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
-						this.onHit(j, 0, 0, 0.2);
+						this.onHit(j, edgeArr);
 						return i;
 					}
 				}
@@ -88,43 +53,12 @@ Shield.prototype.detectCollision = function(bulletManager, attacker){
 		}	
 	}
 	return -1;
-	//noLoop();
-	//Check bottom.
-}	
-	
-	
-
-
-//Abstracted version.
-/*Shield.prototype.detectCollision = function(bulletManager, attacker){
-	var edgeArr = attacker === "alien" ? this.topEdge : this.bottomEdge;
-	for(var i = 0; i < edgeArr.length; i++){
-		//find coord of pixel from index in pixArr.
-		var pixX = this.x + (edgeArr[i] / 4) % this.sprite.width;
-		var pixY = this.y + Math.floor((edgeArr[i] / 4) / this.sprite.width);
-		for(var j = 0; j < bulletManager.size(); j++){
-			var bullet = bulletManager.getBullet(j);
-			//Find differences in values
-			var xDiff = pixX - bullet.x;
-			var yDiff = bullet.y - pixY;
-			//Check for collision.
-			if(xDiff >= 0 && xDiff <= 0.5 + bullet.width){
-				if(yDiff >= 0 && yDiff <= 0.5 + bullet.speed){
-					this.onHit(i, 0, 0, 0.2);
-					return j;
-				}
-			}
-		}
-	}
-	return -1;
-	//noLoop();
-	//Check bottom.
-}*/
+}
 
 //Provides collision behaviour.
 //Circular area around collision point is destroyed.
 //The circle radius is randomised, with some additional "noise" to prevent perfect circles.
-Shield.prototype.onHit = function(originalPixel){
+Shield.prototype.onHit = function(originalPixel, edgeArr){
 	var blastRadius = Math.floor(Math.random() * 5) + 6;
 	var hitPixels = [];
 	
@@ -137,23 +71,21 @@ Shield.prototype.onHit = function(originalPixel){
 			}
 		}
 	}
-	this.destroyPixel(originalPixel, hitPixels);
+	this.destroyPixel(originalPixel, edgeArr, hitPixels);
 	
 	//Fill top/bottom arrays for new shield shape.
 	this.topEdge = this.fillTop();
 	this.bottomEdge = this.fillBottom();
-	//this.colorEdge(this.topEdge);
-	//this.colorEdge(this.bottomEdge);
 };
 
 //Sets the pixel to black, indicating destruction. It will not be included in future hit detections.
-Shield.prototype.destroyPixel = function(originalPixel, hitPixels){
+Shield.prototype.destroyPixel = function(originalPixel, edgeArr, hitPixels){
 	this.sprite.loadPixels();
 	for(var i = 0; i < hitPixels.length; i = i + 2){
 		var additionalPixels = (hitPixels[i] * 4) - (hitPixels[i + 1] * this.sprite.width * 4);
-		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels] = 0;
-		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels + 1] = 0;
-		this.sprite.pixels[this.bottomEdge[originalPixel] + additionalPixels + 2] = 0;
+		this.sprite.pixels[edgeArr[originalPixel] + additionalPixels] = 0;
+		this.sprite.pixels[edgeArr[originalPixel] + additionalPixels + 1] = 0;
+		this.sprite.pixels[edgeArr[originalPixel] + additionalPixels + 2] = 0;
 	}
 	this.sprite.updatePixels();
 }
