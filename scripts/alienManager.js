@@ -208,7 +208,7 @@ function AlienManager(){
 	this.aliensLanded = function(){
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.get(i).size(); j++){
-				if(this.get(i).get(j).y >= 480){
+				if(this.get(i).get(j).y >= 400){
 					return true;
 				}
 			}
