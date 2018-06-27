@@ -2,6 +2,7 @@
 Clone of a retro classic.
 
 To run this game locally, it must be hosted on a local server as most modern browsers block cross-origin requests.
+Audio is currently disabled when using FireFox, due to a memory leak within the p5 sound module.
 
 Install and run on local server:
 1) Download the project.

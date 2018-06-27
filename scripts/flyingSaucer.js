@@ -55,9 +55,8 @@ FlyingSaucer.prototype.detectCollision = function(bullet){
 	var yDistance = this.y - bullet.y;
 	if((xDistance <= Bullet.prototype.width && xDistance + this.width >= 0) && 
 		(yDistance <= 0 && yDistance + this.height >= 0)){
-		var isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
-		if(!isFirefox){
-			Shooter.prototype.shootSound.play();	
+		if(!gameManager.isFirefox){
+			this.killedSound.play();	
 		}
 		return true;
 	}
