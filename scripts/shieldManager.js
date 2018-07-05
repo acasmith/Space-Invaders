@@ -27,18 +27,24 @@ ShieldManager.prototype.display = function(){
 }
 
 //Calls detectCollision on all shield objects in shields[].
-ShieldManager.prototype.detectCollisions = function(playerBulletManager){
-	if(!playerBulletManager.isEmpty()){
+ShieldManager.prototype.detectCollisions = function(bulletManager, attacker){
+	//Detect player bullet collisions.
+	if(!bulletManager.isEmpty()){
 		for(var i = 0; i < this.shields.length; i++){
-			this.shields[i].detectCollision(playerBulletManager);
+			var bulletIndex = this.shields[i].detectCollision(bulletManager, attacker);
+			if(bulletIndex >= 0){
+				bulletManager.remove(bulletIndex);
+				break;
+			}
 		}
 	}
 }
 
 //Orchestration function for common ShieldManager functions.
-ShieldManager.prototype.manage = function(playerBulletManager){
+ShieldManager.prototype.manage = function(playerBulletManager, alienBulletManager){
+	this.detectCollisions(playerBulletManager, "player");
+	this.detectCollisions(alienBulletManager, "alien");
 	this.display();
-	this.detectCollisions(playerBulletManager);
 }
 
 //Set fail state for when aliens get to shield y val.

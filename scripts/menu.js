@@ -2,6 +2,7 @@
 function Menu(screen){
 	this.currentScreen = screen; //0 for main screen, 1 for controls, 2 for highscores, 3 for gameOver.
 	this.currentSelection = 0; //0 for play, 1 for controls, 2 for highscores.
+	this.logo = loadImage("images/space_invaders_logo.jpg");
 }
 
 /********Inherited Functions********/
@@ -31,15 +32,16 @@ Menu.prototype.display = function(){
 Menu.prototype.mainMenu = function(){
 	var options = ["Play", "Controls", "High Scores"];
 	//Placeholder for S-I logo. The image requires hosting on a server due to x-origin blocking.
-	stroke("red");
-	rect(50, 30, 540, 200);
+	//stroke("red");
+	//rect(50, 30, 540, 200);
+	image(this.logo, 50, -120, 540, 540);
 	this.contentStyle();
-	text("Main Menu", width/2, height/4);
+	//text("Main Menu", width/2, height/4);
 	for(var i = 0; i < 3; i++){
 		if(i === this.currentSelection){
 			this.highlightStyle();
 		}
-		text(options[i], width/2, height/2 + i * 20);
+		text(options[i], width/2, height/3 * 2 + i * 20);
 		this.contentStyle();
 	}
 }
