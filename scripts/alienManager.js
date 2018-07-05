@@ -1,9 +1,10 @@
-function AlienManager(){
+function AlienManager(gameObjects){
 	this.aliens = new List();
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
 	this.alienPause = false;
 	this.flyingSaucer;
 	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);
+	this.gameObjects = gameObjects;
 	
 	//Returns a list containing 11 alien objects.
 	this.createRow = function(constructor, yVal){
@@ -101,7 +102,7 @@ function AlienManager(){
 	}
 	
 	//Orchestration function for calling regular alienManager functions. INCLUDE CHANGE SPRITES IN CLASSES!
-	this.manage = function(playerBulletManager, alienBulletManager){
+	this.manage = function(){
 		//When game is not paused.
 		if(!this.alienPause){
 			//Every 60 second update alien sprites and move main alien pack.
@@ -111,7 +112,7 @@ function AlienManager(){
 			}
 			//Shoot when it's targetFrame.
 			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
-				alienBulletManager.add(this.shoot());
+				this.gameObjects.getAlienBullets().add(this.shoot());
 			}
 			//If saucer is up, move it. If it goes out of bounds, remove it.
 			if(this.flyingSaucer){
@@ -127,8 +128,9 @@ function AlienManager(){
 			this.saucerFrame++;
 		}
 		//If a players bullet is in play, see if it hits anything.
-		if(!playerBulletManager.isEmpty()){
-			this.detectCollisions(playerBulletManager);
+		var playerBullets = this.gameObjects.getPlayerBullets();
+		if(!playerBullets.isEmpty()){
+			this.detectCollisions(playerBullets);
 		}
 		//Draw updated state to the screen.
 		this.display();

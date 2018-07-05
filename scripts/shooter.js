@@ -1,5 +1,5 @@
 //When shooter is destoryed on death, add all functions to prototype to aid memory management.
-function Shooter(){
+function Shooter(gameObjects){
 	this.sprite = Shooter.prototype.sprites.alive;
 	this.width = this.sprite.width;
 	this.height = this.sprite.height;
@@ -7,6 +7,7 @@ function Shooter(){
 	this.y = height - this.height;
 	this.bulletColor = "#39ff14";
 	this.dead = false;
+	this.gameObjects = gameObjects;
 }	
 
 /*****Inherited functions****/
@@ -27,7 +28,8 @@ Shooter.prototype.move = function(left){
 }
 
 //Creates a new bullet.
-Shooter.prototype.fire = function(playerBulletManager){
+Shooter.prototype.fire = function(){
+	var playerBulletManager = this.gameObjects.getPlayerBullets();
 	if(!this.dead && playerBulletManager.isEmpty()){
 		playerBulletManager.add(new Bullet(this.x + (this.width / 2) - (Bullet.prototype.width / 2), this.y, this.bulletColor));
 		if(!gameManager.isFirefox){
@@ -39,7 +41,8 @@ Shooter.prototype.fire = function(playerBulletManager){
 
 //Detects is the player intersects with an alien bullet.
 //NOTE: Current hitbox does not include barrel.
-Shooter.prototype.detectCollisions = function(alienBulletManager){
+Shooter.prototype.detectCollisions = function(){
+	var alienBulletManager = this.gameObjects.alienBulletManager;
 	for(var i = 0; i < alienBulletManager.size(); i++){
 		var xDistance = alienBulletManager.getBullet(i).x - this.x;
 		var yDistance = alienBulletManager.getBullet(i).y - this.y;
@@ -62,8 +65,8 @@ Shooter.prototype.death = function(){
 }
 
 //Orchestration function for regular shooter activities.
-Shooter.prototype.manage = function(alienManager, alienBulletManager){
-	if(!this.dead && this.detectCollisions(alienBulletManager)){
+Shooter.prototype.manage = function(){
+	if(!this.dead && this.detectCollisions()){
 		this.death();
 	}
 	this.display();

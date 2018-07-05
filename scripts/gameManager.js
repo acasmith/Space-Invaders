@@ -1,18 +1,20 @@
+/*
+TODO
+	Bug in shooter when player dies. Investigate.
+	Update playerDeath(), playerControls(), keyPressed() to decouple and make use of gameObjects better.
+	
+*/
+
 function GameManager(){
 	this.score;
 	this.lives;
-	this.shooter;
-	this.alienManager;
-	this.playerBulletManager;
-	this.alienBulletManager;
 	this.ui;
 	this.menu;
 	this.playing;
 	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
-	this.shieldManager;
 	
-	//this.gameObjects = new gameObjects();
+	this.gameObjects = new gameObjects();
 	
 	this.startGame = function(){
 		this.playing = false;
@@ -25,26 +27,16 @@ function GameManager(){
 		this.playing = true;
 		this.score = 0;
 		this.lives = 3;
-		this.shooter = new Shooter();
-		this.alienManager = new AlienManager();
-		this.shieldManager = new ShieldManager();
-		this.playerBulletManager = new BulletManager(1);
-		this.alienBulletManager = new BulletManager(-1);
+
 		this.ui = new UI();
-		this.alienManager.createAliens();
-		this.shieldManager.createShields();
 		
-		//this.gameObjects.startPlaying();
+		this.gameObjects.startPlaying();
 	}
 	
 	//Resets the aliens and clears all active bullets.
 	this.reloadLevel = function(){
 		this.lives += 1;
-		this.alienManager.reloadLevel();
-		this.playerBulletManager.reloadLevel();
-		this.alienBulletManager.reloadLevel();
-		
-		//this.gameObjects.reloadLevel();
+		this.gameObjects.reloadLevel();
 	}
 	
 	//Invokes all the functions necessary for each draw cycle.
@@ -52,17 +44,14 @@ function GameManager(){
 		if(!this.playing){
 			this.menu.display();
 		} else{
-			this.playerBulletManager.manage();
-			this.alienBulletManager.manage();
 			this.playControls();
-			this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shieldManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shooter.manage(this.alienManager, this.alienBulletManager);
 			
-			//this.gameObjects.manage();
+			this.gameObjects.manage();
+			
+			this.checkGameStatus();
 			
 			this.ui.display(this.score, this.lives);
-			this.checkGameStatus();
+			
 			if(this.paused){
 				this.pause();
 			}
@@ -71,10 +60,10 @@ function GameManager(){
 	
 	//Checks the win/loss status on the game.
 	this.checkGameStatus = function(){
-		if(this.lives === 0 || this.alienManager.aliensLanded()){
+		if(this.lives === 0 || this.gameObjects.isLoss()){
 			this.gameOver();
 		}
-		else if(this.alienManager.isEmpty()){
+		else if(this.gameObjects.isLevelCleared()){
 			this.reloadLevel();
 		}
 	}
@@ -98,13 +87,13 @@ function GameManager(){
 	//Pauses alien activity and updates lives.
 	//Resets shooter and alienActivity after 2.5 seconds.
 	this.playerDeath = function(){
-		this.alienManager.setPause(true);
+		this.gameObjects.alienManager.setPause(true);
 		this.updateLives(-1);
 		//Timeout (3s) new shooter, aliens resume.
 		var self = this;
 		setTimeout(function(){
-			self.shooter = new Shooter(); 
-			self.alienManager.setPause(false);
+			self.gameObjects.shooter = new Shooter(); 
+			self.gameObjects.alienManager.setPause(false);
 		}, 2500);
 	}
 	
@@ -116,12 +105,12 @@ function GameManager(){
 	
 	//Movement controls controls.
 	this.playControls = function(){
-		if(!this.shooter.dead){
+		if(!this.gameObjects.shooter.dead){
 			if(keyIsDown(LEFT_ARROW) || keyIsDown(65)){
-				this.shooter.move(true);
+				this.gameObjects.shooter.move(true);
 			}
 			if(keyIsDown(RIGHT_ARROW) || keyIsDown(68)){
-				this.shooter.move(false);
+				this.gameObjects.shooter.move(false);
 			}			
 		}
 	}
@@ -133,7 +122,7 @@ function keyPressed(){
 	if(gameManager.playing){
 		//Press Space for shoot
 		if(keyCode === 32){
-			gameManager.shooter.fire(gameManager.playerBulletManager);
+			gameManager.gameObjects.shooter.fire(gameManager.gameObjects.playerBulletManager);
 		}
 	} else {
 		if(keyCode === 87 || keyCode === 38){

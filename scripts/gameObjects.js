@@ -7,10 +7,10 @@ function gameObjects(){
 	
 	//Setup for playing the game.
 	this.startPlaying = function(){
-		this.shooter = new Shooter();
+		this.shooter = new Shooter(this);
 		
-		this.alienManager = new AlienManager();
-		this.shieldManager = new ShieldManager();
+		this.alienManager = new AlienManager(this);
+		this.shieldManager = new ShieldManager(this);
 		
 		this.playerBulletManager = new BulletManager(1);
 		this.alienBulletManager = new BulletManager(-1);
@@ -34,9 +34,25 @@ function gameObjects(){
 	this.manage = function(){
 		this.playerBulletManager.manage();
 		this.alienBulletManager.manage();
-		this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
-		this.shieldManager.manage(this.playerBulletManager);
-		this.shooter.manage(this.alienManager, this.alienBulletManager);
+		this.alienManager.manage();
+		this.shieldManager.manage();
+		this.shooter.manage();
+	}
+	
+	this.isLoss = function(){
+		this.alienManager.aliensLanded();
+	}
+	
+	this.getPlayerBullets = function(){
+		return this.playerBulletManager;
+	}
+	
+	this.getAlienBullets = function(){
+		return this.alienBulletManager;
+	}
+	
+	this.isLevelCleared = function(){
+		return this.alienManager.isEmpty();
 	}
 	
 	

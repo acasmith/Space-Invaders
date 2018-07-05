@@ -1,5 +1,6 @@
-function ShieldManager(){
+function ShieldManager(gameObjects){
 	this.shields = [];
+	this.gameObjects = gameObjects;
 }
 
 //Creates a new setup of shields.
@@ -41,10 +42,8 @@ ShieldManager.prototype.detectCollisions = function(bulletManager, attacker){
 }
 
 //Orchestration function for common ShieldManager functions.
-ShieldManager.prototype.manage = function(playerBulletManager, alienBulletManager){
-	this.detectCollisions(playerBulletManager, "player");
-	this.detectCollisions(alienBulletManager, "alien");
+ShieldManager.prototype.manage = function(){
+	this.detectCollisions(this.gameObjects.getPlayerBullets(), "player");
+	this.detectCollisions(this.gameObjects.getAlienBullets(), "alien");
 	this.display();
 }
-
-//Set fail state for when aliens get to shield y val.
