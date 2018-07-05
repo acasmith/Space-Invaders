@@ -1,3 +1,9 @@
+/*TODO
+	Refactor according to open/closed principle: remove hardcoding as much as possible.
+		For gamemanager, create gameObjects array: they all have a common interface.
+	Make GameManager an IIFE. Find a way to stop polluting the global namespace with everything.
+*/
+
 function GameManager(){
 	this.score;
 	this.lives;
