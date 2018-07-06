@@ -1,6 +1,5 @@
 /*
 TODO
-	Bug in shooter when player dies. Investigate.
 	Update playerDeath(), playerControls(), keyPressed() to decouple and make use of gameObjects better.
 	
 */
@@ -8,18 +7,18 @@ TODO
 function GameManager(){
 	this.score;
 	this.lives;
-	this.ui;
-	this.menu;
 	this.playing;
 	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 	
-	this.gameObjects = new gameObjects();
+	this.gameObjects = new gameObjects(this);
+	this.uiObjects = new uiObjects(this);
+	//this.controls = new controlManager(this);
 	
 	this.startGame = function(){
 		this.playing = false;
 		this.paused = false;
-		this.menu = new Menu(0);
+		this.uiObjects.startGame();
 	}
 	
 	//Provides setup for playing the game.
@@ -27,10 +26,9 @@ function GameManager(){
 		this.playing = true;
 		this.score = 0;
 		this.lives = 3;
-
-		this.ui = new UI();
 		
 		this.gameObjects.startPlaying();
+		this.uiObjects.startPlaying();
 	}
 	
 	//Resets the aliens and clears all active bullets.
@@ -39,18 +37,28 @@ function GameManager(){
 		this.gameObjects.reloadLevel();
 	}
 	
+	this.isPlaying = function(){
+		return this.playing;
+	}
+	
+	this.getScore = function(){
+		return this.score;
+	}
+	
+	this.getLives = function(){
+		return this.lives;
+	}
+	
 	//Invokes all the functions necessary for each draw cycle.
 	this.manage = function(){
-		if(!this.playing){
-			this.menu.display();
-		} else{
-			this.playControls();
-			
+		this.uiObjects.manage();
+		
+		if(this.playing){
 			this.gameObjects.manage();
 			
-			this.checkGameStatus();
+			this.playControls();
 			
-			this.ui.display(this.score, this.lives);
+			this.checkGameStatus();
 			
 			if(this.paused){
 				this.pause();
@@ -71,7 +79,7 @@ function GameManager(){
 	//Changes the game state to menu mode and displays the gameOver screen.
 	this.gameOver = function(){
 		this.playing = false;
-		this.menu = new Menu(3);
+		this.uiObjects.gameOver();
 	}
 	
 	//updates score by the argument given.
@@ -119,11 +127,11 @@ function keyPressed(){
 		}
 	} else {
 		if(keyCode === 87 || keyCode === 38){
-			gameManager.menu.changeSelection(-1);
+			gameManager.uiObjects.changeSelection(-1);
 		} else if(keyCode === 83 || keyCode === 40){
-			gameManager.menu.changeSelection(1);
+			gameManager.uiObjects.changeSelection(1);
 		} else if(keyCode === 13 || keyCode === 32){
-			gameManager.menu.select();
+			gameManager.uiObjects.select();
 		}
 	}	
 }

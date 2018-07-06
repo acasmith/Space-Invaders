@@ -4,6 +4,7 @@ function gameObjects(gameManager){
 	this.shieldManager;
 	this.playerBulletManager;
 	this.alienBulletManager;
+	this.gameManager = gameManager;
 	
 	//Setup for playing the game.
 	this.startPlaying = function(){

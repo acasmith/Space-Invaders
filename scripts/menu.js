@@ -7,6 +7,10 @@ function Menu(screen){
 
 /********Inherited Functions********/
 
+Menu.prototype.manage = function(){
+	this.display();
+}
+
 //Displays a menu screen based on the current value of this.currentScreen.
 Menu.prototype.display = function(){
 	switch (this.currentScreen){
