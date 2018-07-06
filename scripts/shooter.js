@@ -61,7 +61,7 @@ Shooter.prototype.death = function(){
 	if(!gameManager.isFirefox){
 		this.deathSound.play();
 	}
-	gameManager.playerDeath();
+	this.gameObjects.playerDeath();
 }
 
 //Orchestration function for regular shooter activities.

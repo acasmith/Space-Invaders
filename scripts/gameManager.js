@@ -87,14 +87,7 @@ function GameManager(){
 	//Pauses alien activity and updates lives.
 	//Resets shooter and alienActivity after 2.5 seconds.
 	this.playerDeath = function(){
-		this.gameObjects.alienManager.setPause(true);
 		this.updateLives(-1);
-		//Timeout (3s) new shooter, aliens resume.
-		var self = this;
-		setTimeout(function(){
-			self.gameObjects.shooter = new Shooter(); 
-			self.gameObjects.alienManager.setPause(false);
-		}, 2500);
 	}
 	
 	this.pause = function(){

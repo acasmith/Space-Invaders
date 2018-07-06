@@ -1,4 +1,4 @@
-function gameObjects(){
+function gameObjects(gameManager){
 	this.shooter;
 	this.alienManager;
 	this.shieldManager;
@@ -55,5 +55,15 @@ function gameObjects(){
 		return this.alienManager.isEmpty();
 	}
 	
+	this.playerDeath = function(){
+		this.gameManager.playerDeath();
+		this.alienManager.setPause(true);
+		//Timeout (2.5s) new shooter, aliens resume.
+		var self = this;
+		setTimeout(function(){
+			self.shooter = new Shooter(self);
+			self.alienManager.setPause(false);
+		}, 2500);
+	}
 	
 }
