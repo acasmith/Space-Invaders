@@ -1,10 +1,11 @@
 /*
 TODO
-	Move game state to gameStateManager.
-	Move pause() from gameManager to UI.
+	Refactor mid level manager classes. Start with Alien manager.
 	
 */
 
+//Orchestrator for game functionality. 
+//Routes message sends and returns where cascading is necessary.
 function GameManager(){
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 	
@@ -39,7 +40,7 @@ function GameManager(){
 		if(this.isPlaying()){
 			this.gameObjects.manage();
 			this.controls.manage();
-			this.gameState.checkGameStatus();
+			this.gameState.manage();
 			
 			if(this.isPaused()){
 				this.pause();
@@ -74,6 +75,10 @@ function GameManager(){
 	
 	this.menuSelect = function(){
 		this.uiObjects.select();
+	}
+	
+	this.pause = function(){
+		this.uiObjects.pause();
 	}
 	
 	//Must be part of IIFE return objects interface.
@@ -126,11 +131,6 @@ function GameManager(){
 	
 	this.updateLives = function(additionalLives){
 		this.gameState.updateLives(additionalLives);
-	}
-	
-	//TODO: Add to UI, change call to reference UI.
-	this.pause = function(){
-		this.uiObjects.pause();
 	}
 
 }

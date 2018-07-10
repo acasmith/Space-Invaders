@@ -16,6 +16,11 @@ function gameStateManager(gameManager){
 		this.playing = true;
 	}
 	
+	//Functions to be called in each draw cycle.
+	this.manage = function(){
+		this.checkGameStatus();
+	}
+	
 	//Checks the win/loss status on the game.
 	this.checkGameStatus = function(){
 		if(this.getLives() === 0 || this.gameManager.isLoss()){

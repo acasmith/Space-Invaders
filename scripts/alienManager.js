@@ -1,9 +1,9 @@
 function AlienManager(gameObjects){
 	this.aliens = new List();
-	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
+	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);	//Next time an alien will shoot
 	this.alienPause = false;
 	this.flyingSaucer;
-	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);
+	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);	//next time a FlyingSaucer will spawn.
 	this.gameObjects = gameObjects;
 	
 	//Returns a list containing 11 alien objects.
