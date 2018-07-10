@@ -67,4 +67,16 @@ function gameObjects(gameManager){
 		}, 2500);
 	}
 	
+	this.isPlayerDead = function(){
+		return this.shooter.isDead();
+	}
+	
+	this.playerMove = function(direction){
+		this.shooter.move(direction);
+	}
+	
+	this.playerShoot = function(){
+		this.shooter.fire(this.playerBulletManager);
+	}
+	
 }

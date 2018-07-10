@@ -72,6 +72,10 @@ Shooter.prototype.manage = function(){
 	this.display();
 }
 
+Shooter.prototype.isDead = function(){
+	return this.dead;
+}
+
 /*******End inherited functions******/
 
 //Load assets

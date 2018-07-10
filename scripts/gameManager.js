@@ -1,19 +1,20 @@
 /*
 TODO
-	Update playerDeath(), playerControls(), keyPressed() to decouple and make use of gameObjects better.
+	Move pause() from gameManager to UI.
 	
 */
 
 function GameManager(){
 	this.score;
 	this.lives;
-	this.playing;
-	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
+	this.playing;	//Tracks whether in menu or in gameplay
+	this.paused;	//Tracks whether gamplay is currently pause. Do not confuse with pause()!
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 	
+	//this.gameState = new gameStateManager();
 	this.gameObjects = new gameObjects(this);
 	this.uiObjects = new uiObjects(this);
-	//this.controls = new controlManager(this);
+	this.controls = new controlManager(this);
 	
 	this.startGame = function(){
 		this.playing = false;
@@ -41,6 +42,18 @@ function GameManager(){
 		return this.playing;
 	}
 	
+	this.isPaused = function(){
+		return this.paused;
+	}
+	
+	this.setPaused = function(status){
+		this.paused = status;
+	}
+	
+	this.isPlayerDead = function(){
+		return this.gameObjects.isPlayerDead();
+	}
+	
 	this.getScore = function(){
 		return this.score;
 	}
@@ -55,8 +68,7 @@ function GameManager(){
 		
 		if(this.playing){
 			this.gameObjects.manage();
-			
-			this.playControls();
+			this.controls.manage();
 			
 			this.checkGameStatus();
 			
@@ -98,58 +110,52 @@ function GameManager(){
 		this.updateLives(-1);
 	}
 	
+	//TODO: Add to UI, change call to reference UI.
 	this.pause = function(){
 		background(0);
 		textAlign(CENTER);
 		text("PAUSED", width/2, height/2);
 	}
 	
-	//Movement controls controls.
-	this.playControls = function(){
-		if(!this.gameObjects.shooter.dead){
-			if(keyIsDown(LEFT_ARROW) || keyIsDown(65)){
-				this.gameObjects.shooter.move(true);
-			}
-			if(keyIsDown(RIGHT_ARROW) || keyIsDown(68)){
-				this.gameObjects.shooter.move(false);
-			}			
-		}
+	this.playerMove = function(direction){
+		this.gameObjects.playerMove(direction);
+	}
+	
+	this.playerShoot = function(){
+		this.gameObjects.playerShoot();
+		
+	}
+	
+	this.changeMenuSelection = function(direction){
+		this.uiObjects.changeSelection(direction);
+	}
+	
+	this.menuSelect = function(){
+		this.uiObjects.select();
+	}
+	
+	//Must be part of IIFE return objects interface.
+	this.keyPressed = function(){
+		this.controls.keyPressed();
+	}
+	
+	//Must be part of IIFE return objects interface.
+	this.keyReleased = function(){
+		this.controls.keyReleased();
 	}
 
 }
 
-//Additional controls invoked by event handler called whenever a key is pressed.
+//p5 requires a global handler for keyPressed events.
+//Used for additional controls reliant on keyPressed event.
 function keyPressed(){
-	if(gameManager.playing){
-		//Press Space for shoot
-		if(keyCode === 32){
-			gameManager.gameObjects.shooter.fire(gameManager.gameObjects.playerBulletManager);
-		}
-	} else {
-		if(keyCode === 87 || keyCode === 38){
-			gameManager.uiObjects.changeSelection(-1);
-		} else if(keyCode === 83 || keyCode === 40){
-			gameManager.uiObjects.changeSelection(1);
-		} else if(keyCode === 13 || keyCode === 32){
-			gameManager.uiObjects.select();
-		}
-	}	
+	gameManager.keyPressed();
 }
 
-//Additional control invoked by event handler called whenever a key is released.
+//p5 requires a global handler for keyReleased events.
+//Used for additional controls reliant on keyReleased event.
 function keyReleased(){
-	if(gameManager.playing){
-		//Press P for pause.
-		if(keyCode === 80){
-			if(!gameManager.paused){
-				gameManager.paused = true;
-				noLoop();
-			} else{
-				gameManager.paused = false;
-				loop();
-			}
-		}
-	}
+	gameManager.keyReleased();
 }
 
 	
