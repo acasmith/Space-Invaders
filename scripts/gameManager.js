@@ -1,120 +1,62 @@
 /*
 TODO
+	Move game state to gameStateManager.
 	Move pause() from gameManager to UI.
 	
 */
 
 function GameManager(){
-	this.score;
-	this.lives;
-	this.playing;	//Tracks whether in menu or in gameplay
-	this.paused;	//Tracks whether gamplay is currently pause. Do not confuse with pause()!
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 	
-	//this.gameState = new gameStateManager();
+	this.gameState = new gameStateManager(this);
 	this.gameObjects = new gameObjects(this);
 	this.uiObjects = new uiObjects(this);
 	this.controls = new controlManager(this);
 	
+	//Initialises game.
 	this.startGame = function(){
-		this.playing = false;
-		this.paused = false;
+		this.gameState.startGame();
 		this.uiObjects.startGame();
 	}
 	
-	//Provides setup for playing the game.
+	//Begins a gameplay session.
 	this.startPlaying = function(){
-		this.playing = true;
-		this.score = 0;
-		this.lives = 3;
-		
+		this.gameState.startPlaying();
 		this.gameObjects.startPlaying();
 		this.uiObjects.startPlaying();
 	}
 	
 	//Resets the aliens and clears all active bullets.
 	this.reloadLevel = function(){
-		this.lives += 1;
+		this.gameState.reloadLevel();
 		this.gameObjects.reloadLevel();
-	}
-	
-	this.isPlaying = function(){
-		return this.playing;
-	}
-	
-	this.isPaused = function(){
-		return this.paused;
-	}
-	
-	this.setPaused = function(status){
-		this.paused = status;
-	}
-	
-	this.isPlayerDead = function(){
-		return this.gameObjects.isPlayerDead();
-	}
-	
-	this.getScore = function(){
-		return this.score;
-	}
-	
-	this.getLives = function(){
-		return this.lives;
 	}
 	
 	//Invokes all the functions necessary for each draw cycle.
 	this.manage = function(){
 		this.uiObjects.manage();
 		
-		if(this.playing){
+		if(this.isPlaying()){
 			this.gameObjects.manage();
 			this.controls.manage();
+			this.gameState.checkGameStatus();
 			
-			this.checkGameStatus();
-			
-			if(this.paused){
+			if(this.isPaused()){
 				this.pause();
 			}
 		}
 	}
 	
-	//Checks the win/loss status on the game.
-	this.checkGameStatus = function(){
-		if(this.lives === 0 || this.gameObjects.isLoss()){
-			this.gameOver();
-		}
-		else if(this.gameObjects.isLevelCleared()){
-			this.reloadLevel();
-		}
+	//Pauses alien activity and updates lives.
+	//Resets shooter and alienActivity after 2.5 seconds.
+	this.playerDeath = function(){
+		this.gameState.updateLives(-1);
 	}
 	
 	//Changes the game state to menu mode and displays the gameOver screen.
 	this.gameOver = function(){
-		this.playing = false;
+		this.gameState.gameOver();
 		this.uiObjects.gameOver();
-	}
-	
-	//updates score by the argument given.
-	this.updateScore = function(additionalPoints){
-		this.score += additionalPoints;
-	}
-	
-	//updates lives by argument given.
-	this.updateLives = function(additionalLives){
-		this.lives += additionalLives;
-	}
-	
-	//Pauses alien activity and updates lives.
-	//Resets shooter and alienActivity after 2.5 seconds.
-	this.playerDeath = function(){
-		this.updateLives(-1);
-	}
-	
-	//TODO: Add to UI, change call to reference UI.
-	this.pause = function(){
-		background(0);
-		textAlign(CENTER);
-		text("PAUSED", width/2, height/2);
 	}
 	
 	this.playerMove = function(direction){
@@ -143,16 +85,63 @@ function GameManager(){
 	this.keyReleased = function(){
 		this.controls.keyReleased();
 	}
+	
+	//***********Getters and Setters**************
+	
+	this.isPlaying = function(){
+		return this.gameState.isPlaying();
+	}
+	
+	this.isPaused = function(){
+		return this.gameState.isPaused();
+	}
+	
+	this.setPaused = function(status){
+		this.gameState.setPaused(status);
+	}
+	
+	this.isPlayerDead = function(){
+		return this.gameObjects.isPlayerDead();
+	}
+	
+	this.getScore = function(){
+		return this.gameState.getScore();
+	}
+	
+	this.getLives = function(){
+		return this.gameState.getLives();
+	}
+	
+	this.isLoss = function(){
+		return this.gameObjects.isLoss();
+	}
+	
+	this.isLevelCleared = function(){
+		return this.gameObjects.isLevelCleared();
+	}
+	
+	this.updateScore = function(additionalPoints){
+		this.gameState.updateScore(additionalPoints);
+	}
+	
+	this.updateLives = function(additionalLives){
+		this.gameState.updateLives(additionalLives);
+	}
+	
+	//TODO: Add to UI, change call to reference UI.
+	this.pause = function(){
+		this.uiObjects.pause();
+	}
 
 }
 
-//p5 requires a global handler for keyPressed events.
+//p5 requires a globally scoped handler for keyPressed events.
 //Used for additional controls reliant on keyPressed event.
 function keyPressed(){
 	gameManager.keyPressed();
 }
 
-//p5 requires a global handler for keyReleased events.
+//p5 requires a globally scoped handler for keyReleased events.
 //Used for additional controls reliant on keyReleased event.
 function keyReleased(){
 	gameManager.keyReleased();

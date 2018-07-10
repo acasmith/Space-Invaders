@@ -12,3 +12,9 @@ UI.prototype.display = function(score, lives){
 		text("Score: " + score, 10, 20);
 		text("Lives: " + lives, 80, 20);
 }
+
+UI.prototype.pause = function(){
+	background(0);
+	textAlign(CENTER);
+	text("PAUSED", width/2, height/2);
+}

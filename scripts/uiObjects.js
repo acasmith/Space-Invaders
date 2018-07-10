@@ -30,4 +30,8 @@ function uiObjects(gameManager){
 	this.select = function(){
 		this.menu.select();
 	}
+	
+	this.pause = function(){
+		this.ui.pause();
+	}
 }
