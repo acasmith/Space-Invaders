@@ -1,6 +1,6 @@
 //Constructor
-function Menu(screen){
-	this.currentScreen = screen; //0 for main screen, 1 for controls, 2 for highscores, 3 for gameOver.
+function Menu(startScreen){
+	this.currentScreen = startScreen; //0 for main screen, 1 for controls, 2 for highscores, 3 for gameOver.
 	this.currentSelection = 0; //0 for play, 1 for controls, 2 for highscores.
 	this.logo = loadImage("images/space_invaders_logo.jpg");
 }
@@ -61,10 +61,11 @@ Menu.prototype.controlsMenu = function(){
 	text("Controls", width/2, height/4);
 	textAlign(LEFT);
 	text("Move: A/D or Left/Right arrows.", width/4, height/3 + 20);
-	text("Fire: Space", width/4, height/3 + 50);
-	text("Lose all your lives or let the aliens land and it's game over!", width/4, height/3 + 80);
+	text("Fire: Space.", width/4, height/3 + 50);
+	text("Pause: P.", width/4, height/3 + 80);
+	text("Lose all your lives or let the aliens land and it's game over!", width/4, height/3 + 110);
 	this.highlightStyle();
-	text("Back", width/2, height/2 + 120);
+	text("Back", width/2, height/2 + 150);
 }
 
 //Sets out the highscores menu.
@@ -86,6 +87,7 @@ Menu.prototype.gameOver = function(){
 
 //Increments this.currentSelections value by the change argument. 
 //The value wraps around after 0 or 3 ie. 0 - 1 = 2.
+//Values are hardcoded because each screen is currently too small for it's own class.
 Menu.prototype.changeSelection = function(change){
 	this.currentSelection += change;
 	if(this.currentSelection > 2 || this.currentSelection < 0){
