@@ -1,4 +1,3 @@
-//When shooter is destoryed on death, add all functions to prototype to aid memory management.
 function Shooter(gameObjects){
 	this.sprite = Shooter.prototype.sprites.alive;
 	this.width = this.sprite.width;
