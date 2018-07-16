@@ -8,9 +8,7 @@ function Shooter(gameObjects){
 	this.bulletColor = "#39ff14";
 	this.dead = false;
 	this.gameObjects = gameObjects;
-}	
-
-/*****Inherited functions****/
+}
 
 //Displays the sprite.
 Shooter.prototype.display = function(){
@@ -27,18 +25,13 @@ Shooter.prototype.move = function(left){
 	
 }
 
-//Creates a new bullet.
 Shooter.prototype.fire = function(){
-	var playerBulletManager = this.gameObjects.getPlayerBullets();
-	if(!this.dead && playerBulletManager.isEmpty()){
-		playerBulletManager.add(new Bullet(this.x + (this.width / 2) - (Bullet.prototype.width / 2), this.y, this.bulletColor));
-		if(!gameManager.isFirefox){
-			Shooter.prototype.shootSound.play();	
-		}
-		
+	if(!gameManager.isFireFox()){
+		Shooter.prototype.shootSound.play();
 	}
 }
 
+//TODO: Refactor collision detection into single class for all instances.
 //Detects is the player intersects with an alien bullet.
 //NOTE: Current hitbox does not include barrel.
 Shooter.prototype.detectCollisions = function(){
@@ -76,6 +69,31 @@ Shooter.prototype.isDead = function(){
 	return this.dead;
 }
 
+Shooter.prototype.getX = function(){
+	return this.x;
+}
+
+Shooter.prototype.getY = function(){
+	return this.y;
+}
+
+Shooter.prototype.getWidth = function(){
+	return this.width;
+}
+
+Shooter.prototype.getBulletColor = function(){
+	return this.bulletColor;
+}
+
+Shooter.prototype.getBulletInfo = function(){
+	var bulletInfo = {};
+	bulletInfo.x = this.getX();
+	bulletInfo.y = this.getY();
+	bulletInfo.bulletColor = this.getBulletColor();
+	bulletInfo.width = this.getWidth();
+	return bulletInfo;
+}
+
 Shooter.prototype.preload = function(){
 	Shooter.prototype.sprites = {alive: loadImage("images/shooter.png"), dead: loadImage("images/deadShooter.png")};
 	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
@@ -86,15 +104,3 @@ Shooter.prototype.setup = function(){
 	Shooter.prototype.shootSound.setVolume(0.1);
 	Shooter.prototype.deathSound.setVolume(0.2);
 }
-
-/*******End inherited functions******/
-
-//Load assets
-/*window.addEventListener("load", addToPrototype);
-function addToPrototype(){
-	Shooter.prototype.sprites = {alive: loadImage("images/shooter.png"), dead: loadImage("images/deadShooter.png")};
-	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
-	Shooter.prototype.shootSound.setVolume(0.1);
-	Shooter.prototype.deathSound = loadSound("sounds/playerKilled.wav");
-	Shooter.prototype.deathSound.setVolume(0.2);
-}*/

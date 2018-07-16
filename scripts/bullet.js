@@ -1,6 +1,6 @@
 //Constructor
 function Bullet(x, y, color){
-	this.x = x;
+	this.x = x - (Bullet.prototype.width / 2);
 	this.y = y;
 	this.speed = 10;
 	this.color = color;

@@ -76,7 +76,12 @@ function gameObjects(gameManager){
 	}
 	
 	this.playerShoot = function(){
-		this.shooter.fire(this.playerBulletManager);
+		if(!this.shooter.isDead() && this.playerBulletManager.isEmpty()){
+			this.shooter.fire();
+			this.playerBulletManager.fire(this.shooter.getBulletInfo());
+		}
 	}
+	
+	
 	
 }

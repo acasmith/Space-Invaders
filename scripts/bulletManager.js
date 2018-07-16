@@ -21,6 +21,11 @@ function BulletManager(direction){
 		this.bulletList.add(playerBullet, -1);
 	}
 	
+	BulletManager.prototype.fire = function(bulletInfo){
+		var playerBullet = new Bullet(bulletInfo.x + (bulletInfo.width / 2), bulletInfo.y, bulletInfo.bulletColor)
+		this.bulletList.add(playerBullet, -1);
+	}
+	
 	//Removes the bullet from the list.
 	this.remove = function(bulletIndex){
 		this.bulletList.remove(bulletIndex);
