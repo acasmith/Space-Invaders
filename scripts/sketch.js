@@ -1,7 +1,7 @@
 /**
 	Main.
 **/
-var gameManager;
+var gameManager = new GameManager(gameStateManager, gameObjects, uiObjects, controlManager);
 
 function preload(){
 	Alien.prototype.preload();
@@ -9,6 +9,7 @@ function preload(){
 	Alien3.prototype.preload();
 	FlyingSaucer.prototype.preload();
 	Shield.prototype.preload();
+	Shooter.prototype.preload();
 }
 
 function setup(){
@@ -17,8 +18,9 @@ function setup(){
   Alien3.prototype.setup();
   FlyingSaucer.prototype.setup();
   Shield.prototype.setup();
+  Shooter.prototype.setup();
   createCanvas(640,480);
-  gameManager = new GameManager();
+  //gameManager = new GameManager();
   gameManager.startGame();
 } 
 

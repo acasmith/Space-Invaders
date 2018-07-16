@@ -6,13 +6,13 @@ TODO
 
 //Orchestrator for game functionality. 
 //Routes message sends and returns where cascading is necessary.
-function GameManager(){
+function GameManager(gameStateConstructor, gameObjectsConstructor, uiObjectsConstructor, controlsConstructor){
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
 	
-	this.gameState = new gameStateManager(this);
-	this.gameObjects = new gameObjects(this);
-	this.uiObjects = new uiObjects(this);
-	this.controls = new controlManager(this);
+	this.gameState = new gameStateConstructor(this);
+	this.gameObjects = new gameObjectsConstructor(this);
+	this.uiObjects = new uiObjectsConstructor(this);
+	this.controls = new controlsConstructor(this);
 	
 	//Initialises game.
 	this.startGame = function(){

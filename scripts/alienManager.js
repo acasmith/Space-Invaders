@@ -1,3 +1,10 @@
+/*
+TODO: 
+	Move alien creation to a factory object to reduce coupling.
+	Refactor movement elements into movement module. Factor into functions that do one thing only.
+	Refactor collision detection into a single class for all entities.
+
+*/
 function AlienManager(gameObjects){
 	this.aliens = new List();
 	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);	//Next time an alien will shoot

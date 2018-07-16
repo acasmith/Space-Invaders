@@ -76,14 +76,25 @@ Shooter.prototype.isDead = function(){
 	return this.dead;
 }
 
+Shooter.prototype.preload = function(){
+	Shooter.prototype.sprites = {alive: loadImage("images/shooter.png"), dead: loadImage("images/deadShooter.png")};
+	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
+	Shooter.prototype.deathSound = loadSound("sounds/playerKilled.wav");
+}
+
+Shooter.prototype.setup = function(){
+	Shooter.prototype.shootSound.setVolume(0.1);
+	Shooter.prototype.deathSound.setVolume(0.2);
+}
+
 /*******End inherited functions******/
 
 //Load assets
-window.addEventListener("load", addToPrototype);
+/*window.addEventListener("load", addToPrototype);
 function addToPrototype(){
 	Shooter.prototype.sprites = {alive: loadImage("images/shooter.png"), dead: loadImage("images/deadShooter.png")};
 	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
 	Shooter.prototype.shootSound.setVolume(0.1);
 	Shooter.prototype.deathSound = loadSound("sounds/playerKilled.wav");
 	Shooter.prototype.deathSound.setVolume(0.2);
-}
+}*/
