@@ -77,7 +77,7 @@ Menu.prototype.highScores = function(){
 Menu.prototype.gameOver = function(){
 		this.contentStyle();
 		text("GAME OVER", width/2, height/4);
-		text("Final score: " + gameManager.score, width/2, height/2);
+		text("Final score: " + gameManager.getScore(), width/2, height/2);
 		this.highlightStyle();
 		text("Main Menu", width/2, height /2 + 120);
 		

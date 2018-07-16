@@ -26,7 +26,7 @@ Shooter.prototype.move = function(left){
 }
 
 Shooter.prototype.fire = function(){
-	if(!gameManager.isFireFox()){
+	if(!gameManager.isFirefox){
 		Shooter.prototype.shootSound.play();
 	}
 }
