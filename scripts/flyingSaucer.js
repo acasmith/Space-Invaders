@@ -62,11 +62,3 @@ FlyingSaucer.prototype.detectCollision = function(bullet){
 	}
 	return false;
 }
-
-//display (y)
-//move (y)
-//detectCollisions. (y)
-//direction. (y)
-//Change sprite. (y)
-//Out of bounds (y)
-//Random spawn, random direction. (y)

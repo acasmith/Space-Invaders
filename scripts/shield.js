@@ -76,7 +76,10 @@ Shield.prototype.onHit = function(originalPixel, edgeArr){
 	this.bottomEdge = this.fillEdge("bottom");
 };
 
-//Sets the pixel to black, indicating destruction. It will not be included in future hit detections.
+//Sets the pixel to black, indicating destruction. It will not be included in 
+//future hit detections.
+//Takes an array rather than an individual pixel because the 
+//load/updatePixels calls are resource intensive.
 Shield.prototype.destroyPixel = function(originalPixel, edgeArr, hitPixels){
 	this.sprite.loadPixels();
 	for(var i = 0; i < hitPixels.length; i = i + 2){

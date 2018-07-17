@@ -1,5 +1,5 @@
 function Alien3(x, y){
-	this.x = x + ((Object.getPrototypeOf(Alien3.prototype).width - Alien3.prototype.width) / 2);
+	this.x = x + ((Object.getPrototypeOf(Alien3.prototype).width - Alien3.prototype.width) / 2); //Alien3 sprite is smaller, and needs to be centered.
 	this.y = y;
 }
 

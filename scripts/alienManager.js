@@ -217,7 +217,7 @@ function AlienManager(gameObjects){
 	this.aliensLanded = function(){
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.get(i).size(); j++){
-				if(this.get(i).get(j).y >= 400){
+				if(this.get(i).get(j).y >= 400){	//This is too low down.
 					return true;
 				}
 			}

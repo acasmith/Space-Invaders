@@ -38,10 +38,11 @@ function gameObjects(gameManager){
 		this.alienManager.manage();
 		this.shieldManager.manage();
 		this.shooter.manage();
+		//this.detectCollisions();
 	}
 	
 	this.isLoss = function(){
-		this.alienManager.aliensLanded();
+		return this.alienManager.aliensLanded();
 	}
 	
 	this.getPlayerBullets = function(){
@@ -79,6 +80,13 @@ function gameObjects(gameManager){
 		if(!this.shooter.isDead() && this.playerBulletManager.isEmpty()){
 			this.shooter.fire();
 			this.playerBulletManager.fire(this.shooter.getBulletInfo());
+		}
+	}
+	
+	//Generic collision detection method. Currently unimplemented.
+	this.detectCollisions = function(object, bullets){
+		if(this.collider.detectCollisions(object, bullets)){
+			object.onHit();
 		}
 	}
 	

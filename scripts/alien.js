@@ -9,7 +9,7 @@ function Alien(x, y){
 Alien.prototype.preload = function(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];	
+	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];
 	//Adds Alien specific values to the prototype.
 	Alien.prototype.setup = function(){
 		Alien.prototype.sprite = Alien.prototype.sprites[0];
@@ -21,8 +21,6 @@ Alien.prototype.preload = function(){
 	}
 }
 
-/********Inherited Functions**********/
-
 //Displays the alien on the canvas.
 Alien.prototype.display = function(){
 	image(this.sprite, this.x, this.y);
@@ -31,7 +29,7 @@ Alien.prototype.display = function(){
 //Moves the alien either left or right depending on the value of this.direction.
 //Returns true when the alien moves out of bounds.
 Alien.prototype.move = function(){
-	this.x = this.direction ? this.x - 10: this.x + 10;
+	this.x = this.direction ? this.x - 80: this.x + 80;
 	return this.isOutOfBounds();
 }
 
@@ -67,5 +65,3 @@ Alien.prototype.isOutOfBounds = function(){
 	}
 	return false;
 }
-
-/*********End inherited functions*******/
