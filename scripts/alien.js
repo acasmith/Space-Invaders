@@ -9,7 +9,7 @@ function Alien(x, y){
 Alien.prototype.preload = function(){
 	Alien.prototype.killedSound = loadSound("sounds/invaderkilled.wav");
 	Alien.prototype.killedSound.setVolume(0.1);
-	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];	
+	Alien.prototype.sprites = [loadImage("images/alien1.png"), loadImage("images/alien1.5.png")];
 	//Adds Alien specific values to the prototype.
 	Alien.prototype.setup = function(){
 		Alien.prototype.sprite = Alien.prototype.sprites[0];
@@ -20,8 +20,6 @@ Alien.prototype.preload = function(){
 		Alien.prototype.direction = false;
 	}
 }
-
-/********Inherited Functions**********/
 
 //Displays the alien on the canvas.
 Alien.prototype.display = function(){
@@ -68,4 +66,6 @@ Alien.prototype.isOutOfBounds = function(){
 	return false;
 }
 
-/*********End inherited functions*******/
+Alien.prototype.getHeight = function(){
+	return this.height;
+}

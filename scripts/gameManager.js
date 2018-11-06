@@ -1,162 +1,150 @@
-/*TODO
-	Refactor according to open/closed principle: remove hardcoding as much as possible.
-		For gamemanager, create gameObjects array: they all have a common interface.
-	Make GameManager an IIFE. Find a way to stop polluting the global namespace with everything.
+/*
+TODO
+	Refactor mid level manager classes. Start with Alien manager.
+	
 */
 
-function GameManager(){
-	this.score;
-	this.lives;
-	this.shooter;
-	this.alienManager;
-	this.playerBulletManager;
-	this.alienBulletManager;
-	this.ui;
-	this.menu;
-	this.playing;
-	this.paused;	//Tracks pause state as a boolean. Do not confuse with pause()!
+//Orchestrator for game functionality. 
+//Routes message sends and returns where cascading is necessary.
+function GameManager(gameStateConstructor, gameObjectsConstructor, uiObjectsConstructor, controlsConstructor){
 	this.isFirefox = typeof InstallTrigger !== 'undefined'; //Playing repeated sound results in memory leak in FF. Much research, still unsure why.
-	this.shieldManager;
 	
+	this.gameState = new gameStateConstructor(this);
+	this.gameObjects = new gameObjectsConstructor(this);
+	this.uiObjects = new uiObjectsConstructor(this);
+	this.controls = new controlsConstructor(this);
+	
+	//Initialises game.
 	this.startGame = function(){
-		this.playing = false;
-		this.paused = false;
-		this.menu = new Menu(0);
+		this.gameState.startGame();
+		this.uiObjects.startGame();
 	}
 	
-	//Provides setup for playing the game.
+	//Begins a gameplay session.
 	this.startPlaying = function(){
-		this.playing = true;
-		this.score = 0;
-		this.lives = 3;
-		this.shooter = new Shooter();
-		this.alienManager = new AlienManager();
-		this.shieldManager = new ShieldManager();
-		this.playerBulletManager = new BulletManager(1);
-		this.alienBulletManager = new BulletManager(-1);
-		this.ui = new UI();
-		this.alienManager.createAliens();
-		this.shieldManager.createShields();
+		this.gameState.startPlaying();
+		this.gameObjects.startPlaying();
+		this.uiObjects.startPlaying();
 	}
 	
 	//Resets the aliens and clears all active bullets.
 	this.reloadLevel = function(){
-		this.lives += 1;
-		this.alienManager.reloadLevel();
-		this.playerBulletManager.reloadLevel();
-		this.alienBulletManager.reloadLevel();
+		this.gameState.reloadLevel();
+		this.gameObjects.reloadLevel();
 	}
 	
 	//Invokes all the functions necessary for each draw cycle.
 	this.manage = function(){
-		if(!this.playing){
-			this.menu.display();
-		} else{
-			this.playerBulletManager.manage();
-			this.alienBulletManager.manage();
-			this.playControls();
-			this.alienManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shieldManager.manage(this.playerBulletManager, this.alienBulletManager);
-			this.shooter.manage(this.alienManager, this.alienBulletManager);
-			this.ui.display(this.score, this.lives);
-			this.checkGameStatus();
-			if(this.paused){
+		this.uiObjects.manage();
+		
+		if(this.isPlaying()){
+			this.gameObjects.manage();
+			this.controls.manage();
+			this.gameState.manage();
+			
+			if(this.isPaused()){
 				this.pause();
 			}
 		}
 	}
 	
-	//Checks the win/loss status on the game.
-	this.checkGameStatus = function(){
-		if(this.lives === 0 || this.alienManager.aliensLanded()){
-			this.gameOver();
-		}
-		else if(this.alienManager.isEmpty()){
-			this.reloadLevel();
-		}
+	//Pauses alien activity and updates lives.
+	//Resets shooter and alienActivity after 2.5 seconds.
+	this.playerDeath = function(){
+		this.gameState.updateLives(-1);
 	}
 	
 	//Changes the game state to menu mode and displays the gameOver screen.
 	this.gameOver = function(){
-		this.playing = false;
-		this.menu = new Menu(3);
+		this.gameState.gameOver();
+		this.uiObjects.gameOver();
 	}
 	
-	//updates score by the argument given.
-	this.updateScore = function(additionalPoints){
-		this.score += additionalPoints;
+	this.playerMove = function(direction){
+		this.gameObjects.playerMove(direction);
 	}
 	
-	//updates lives by argument given.
-	this.updateLives = function(additionalLives){
-		this.lives += additionalLives;
+	this.playerShoot = function(){
+		this.gameObjects.playerShoot();
+		
 	}
 	
-	//Pauses alien activity and updates lives.
-	//Resets shooter and alienActivity after 2.5 seconds.
-	this.playerDeath = function(){
-		this.alienManager.setPause(true);
-		this.updateLives(-1);
-		//Timeout (3s) new shooter, aliens resume.
-		var self = this;
-		setTimeout(function(){
-			self.shooter = new Shooter(); 
-			self.alienManager.setPause(false);
-		}, 2500);
+	this.changeMenuSelection = function(direction){
+		this.uiObjects.changeSelection(direction);
+	}
+	
+	this.menuSelect = function(){
+		this.uiObjects.select();
 	}
 	
 	this.pause = function(){
-		background(0);
-		textAlign(CENTER);
-		text("PAUSED", width/2, height/2);
+		this.uiObjects.pause();
 	}
 	
-	//Movement controls controls.
-	this.playControls = function(){
-		if(!this.shooter.dead){
-			if(keyIsDown(LEFT_ARROW) || keyIsDown(65)){
-				this.shooter.move(true);
-			}
-			if(keyIsDown(RIGHT_ARROW) || keyIsDown(68)){
-				this.shooter.move(false);
-			}			
-		}
+	//Must be part of IIFE return objects interface.
+	this.keyPressed = function(){
+		this.controls.keyPressed();
+	}
+	
+	//Must be part of IIFE return objects interface.
+	this.keyReleased = function(){
+		this.controls.keyReleased();
+	}
+	
+	//***********Getters and Setters**************
+	
+	this.isPlaying = function(){
+		return this.gameState.isPlaying();
+	}
+	
+	this.isPaused = function(){
+		return this.gameState.isPaused();
+	}
+	
+	this.setPaused = function(status){
+		this.gameState.setPaused(status);
+	}
+	
+	this.isPlayerDead = function(){
+		return this.gameObjects.isPlayerDead();
+	}
+	
+	this.getScore = function(){
+		return this.gameState.getScore();
+	}
+	
+	this.getLives = function(){
+		return this.gameState.getLives();
+	}
+	
+	this.isLoss = function(){
+		return this.gameObjects.isLoss();
+	}
+	
+	this.isLevelCleared = function(){
+		return this.gameObjects.isLevelCleared();
+	}
+	
+	this.updateScore = function(additionalPoints){
+		this.gameState.updateScore(additionalPoints);
+	}
+	
+	this.updateLives = function(additionalLives){
+		this.gameState.updateLives(additionalLives);
 	}
 
 }
 
-//Additional controls invoked by event handler called whenever a key is pressed.
+//p5 requires a globally scoped handler for keyPressed events.
+//Used for additional controls reliant on keyPressed event.
 function keyPressed(){
-	if(gameManager.playing){
-		//Press Space for shoot
-		if(keyCode === 32){
-			gameManager.shooter.fire(gameManager.playerBulletManager);
-		}
-	} else {
-		if(keyCode === 87 || keyCode === 38){
-			gameManager.menu.changeSelection(-1);
-		} else if(keyCode === 83 || keyCode === 40){
-			gameManager.menu.changeSelection(1);
-		} else if(keyCode === 13 || keyCode === 32){
-			gameManager.menu.select();
-		}
-	}	
+	gameManager.keyPressed();
 }
 
-//Additional control invoked by event handler called whenever a key is released.
+//p5 requires a globally scoped handler for keyReleased events.
+//Used for additional controls reliant on keyReleased event.
 function keyReleased(){
-	if(gameManager.playing){
-		//Press P for pause.
-		if(keyCode === 80){
-			if(!gameManager.paused){
-				gameManager.paused = true;
-				noLoop();
-			} else{
-				gameManager.paused = false;
-				loop();
-			}
-		}
-	}
+	gameManager.keyReleased();
 }
 
 	

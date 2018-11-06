@@ -1,5 +1,3 @@
-//TODO
-////alien bullet destruction of TOP of shield.
 function Shield(x, y){
 	this.sprite = loadImage("images/shield.png");
 	this.x = x;
@@ -8,15 +6,15 @@ function Shield(x, y){
 	this.bottomEdge = Shield.prototype.bottomEdge;
 }
 
-//Preloads images and sounds for shield objects.
+//Preloads image for shield objects.
 Shield.prototype.preload = function(){
 	Shield.prototype.sprite = loadImage("images/shield.png");
 }
 
 //Organises necessary pre-game setup functionalities for shield objects.
 Shield.prototype.setup = function(){
-	Shield.prototype.topEdge = Shield.prototype.fillTop();
-	Shield.prototype.bottomEdge = Shield.prototype.fillBottom();
+	Shield.prototype.topEdge = Shield.prototype.fillEdge("top");
+	Shield.prototype.bottomEdge = Shield.prototype.fillEdge("bottom");
 }
 
 //Displays the shields sprite.
@@ -74,11 +72,14 @@ Shield.prototype.onHit = function(originalPixel, edgeArr){
 	this.destroyPixel(originalPixel, edgeArr, hitPixels);
 	
 	//Fill top/bottom arrays for new shield shape.
-	this.topEdge = this.fillTop();
-	this.bottomEdge = this.fillBottom();
+	this.topEdge = this.fillEdge("top");
+	this.bottomEdge = this.fillEdge("bottom");
 };
 
-//Sets the pixel to black, indicating destruction. It will not be included in future hit detections.
+//Sets the pixel to black, indicating destruction. It will not be included in 
+//future hit detections.
+//Takes an array rather than an individual pixel because the 
+//load/updatePixels calls are resource intensive.
 Shield.prototype.destroyPixel = function(originalPixel, edgeArr, hitPixels){
 	this.sprite.loadPixels();
 	for(var i = 0; i < hitPixels.length; i = i + 2){
@@ -90,54 +91,36 @@ Shield.prototype.destroyPixel = function(originalPixel, edgeArr, hitPixels){
 	this.sprite.updatePixels();
 }
 
-//Detects top edge of sprite, writes each pixels starting index in pixel array to an array.
+//Detects edge of sprite, writes the starting index of each pixel to an array.
 //Returns the array containing top edge pixel indeces.
-Shield.prototype.fillTop = function(){
+Shield.prototype.fillEdge = function(edgeName){
 	this.sprite.loadPixels();
-	var topEdge = [];
+	var edge = [];
 	var pixArr = this.sprite.pixels;
 	var pixWidth = this.sprite.width;
 	var pixHeight = this.sprite.height;
+	var row = 0;
+	var end = pixHeight;
+	if(edgeName != "top"){
+		var row = -pixHeight;
+		var end = 0;
+	}
 	//Iterate over pixel array
-	//Go down rows until first non black element.
 	for(var i = 0; i < pixWidth; i++){
-		for(var j = 0; j < pixHeight; j++){
-			var currentIndex = (i * 4 ) + (pixWidth * j * 4); //(column) + (row).
+		for(var j = row; j < end; j++){
+			var currentIndex = (i * 4 ) + (pixWidth * (Math.abs(j)) * 4); //(column) + (row).
 			var pixVal = pixArr[currentIndex] + pixArr[currentIndex + 1] + pixArr[currentIndex + 2];
 			if(pixVal > 0){
-				topEdge[i] = currentIndex;
+				edge[i] = currentIndex;
 				break;	//Edge found, move on to next column.
 			}
 		}
 	}
-	return topEdge;
+	return edge;
 }
 
-//Detects bottom edge of sprite, writes each pixel starting index from pixel array to an array.
-//Returns the array containing the bottom edge pixel indeces.
-//TODO: Duplicate code to fillTop except for reversing the loop. Way to refactor to reduce duplication?
-Shield.prototype.fillBottom = function(){
-	this.sprite.loadPixels();
-	var bottomEdge = [];
-	var pixArr = this.sprite.pixels;
-	var pixWidth = this.sprite.width;
-	var pixHeight = this.sprite.height;
-	//Iterate over pixel array
-	//Go up rows until first non black element.
-	for(var i = pixWidth; i >= 0; i--){
-		for(var j = pixHeight; j > 0; j--){
-			var currentIndex = (i * 4 ) + (pixWidth * j * 4); //(column) + (row).
-			var pixVal = pixArr[currentIndex] + pixArr[currentIndex + 1] + pixArr[currentIndex + 2];
-			if(pixVal > 0){
-				bottomEdge[i] = currentIndex;
-				break;	//Edge found, move on to next column.
-			}
-		}
-	}
-	return bottomEdge;
-}
-
-//Iterates over topEdge and changes the pixel color to highlight it.
+//Debugging tool.
+//Iterates over and edge array and changes the pixel color to highlight it.
 Shield.prototype.colorEdge = function(edgeArr){
 	this.sprite.loadPixels();
 	var pixArr = this.sprite.pixels;
@@ -147,4 +130,9 @@ Shield.prototype.colorEdge = function(edgeArr){
 		this.sprite.pixels[edgeArr[i + 2]] = 0;
 	}
 	this.sprite.updatePixels();
+}
+
+//Used in alienManager.aliensLanded(), so the check uses initial shield sprite size.
+Shield.prototype.getY = function(){
+	return this.y;
 }

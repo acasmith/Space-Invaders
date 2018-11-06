@@ -1,5 +1,4 @@
-//When shooter is destoryed on death, add all functions to prototype to aid memory management.
-function Shooter(){
+function Shooter(gameObjects){
 	this.sprite = Shooter.prototype.sprites.alive;
 	this.width = this.sprite.width;
 	this.height = this.sprite.height;
@@ -7,9 +6,8 @@ function Shooter(){
 	this.y = height - this.height;
 	this.bulletColor = "#39ff14";
 	this.dead = false;
-}	
-
-/*****Inherited functions****/
+	this.gameObjects = gameObjects;
+}
 
 //Displays the sprite.
 Shooter.prototype.display = function(){
@@ -26,20 +24,17 @@ Shooter.prototype.move = function(left){
 	
 }
 
-//Creates a new bullet.
-Shooter.prototype.fire = function(playerBulletManager){
-	if(!this.dead && playerBulletManager.isEmpty()){
-		playerBulletManager.add(new Bullet(this.x + (this.width / 2) - (Bullet.prototype.width / 2), this.y, this.bulletColor));
-		if(!gameManager.isFirefox){
-			Shooter.prototype.shootSound.play();	
-		}
-		
+Shooter.prototype.fire = function(){
+	if(!gameManager.isFirefox){
+		Shooter.prototype.shootSound.play();
 	}
 }
 
+//TODO: Refactor collision detection into single class for all instances.
 //Detects is the player intersects with an alien bullet.
 //NOTE: Current hitbox does not include barrel.
-Shooter.prototype.detectCollisions = function(alienBulletManager){
+Shooter.prototype.detectCollisions = function(){
+	var alienBulletManager = this.gameObjects.alienBulletManager;
 	for(var i = 0; i < alienBulletManager.size(); i++){
 		var xDistance = alienBulletManager.getBullet(i).x - this.x;
 		var yDistance = alienBulletManager.getBullet(i).y - this.y;
@@ -58,25 +53,53 @@ Shooter.prototype.death = function(){
 	if(!gameManager.isFirefox){
 		this.deathSound.play();
 	}
-	gameManager.playerDeath();
+	this.gameObjects.playerDeath();
 }
 
 //Orchestration function for regular shooter activities.
-Shooter.prototype.manage = function(alienManager, alienBulletManager){
-	if(!this.dead && this.detectCollisions(alienBulletManager)){
+Shooter.prototype.manage = function(){
+	if(!this.dead && this.detectCollisions()){
 		this.death();
 	}
 	this.display();
 }
 
-/*******End inherited functions******/
+Shooter.prototype.isDead = function(){
+	return this.dead;
+}
 
-//Load assets
-window.addEventListener("load", addToPrototype);
-function addToPrototype(){
+Shooter.prototype.getX = function(){
+	return this.x;
+}
+
+Shooter.prototype.getY = function(){
+	return this.y;
+}
+
+Shooter.prototype.getWidth = function(){
+	return this.width;
+}
+
+Shooter.prototype.getBulletColor = function(){
+	return this.bulletColor;
+}
+
+Shooter.prototype.getBulletInfo = function(){
+	var bulletInfo = {};
+	bulletInfo.x = this.getX();
+	bulletInfo.y = this.getY();
+	bulletInfo.bulletColor = this.getBulletColor();
+	bulletInfo.width = this.getWidth();
+	return bulletInfo;
+}
+
+Shooter.prototype.preload = function(){
 	Shooter.prototype.sprites = {alive: loadImage("images/shooter.png"), dead: loadImage("images/deadShooter.png")};
 	Shooter.prototype.shootSound = loadSound("sounds/shoot.wav");
-	Shooter.prototype.shootSound.setVolume(0.1);
 	Shooter.prototype.deathSound = loadSound("sounds/playerKilled.wav");
+}
+
+Shooter.prototype.setup = function(){
+	Shooter.prototype.shootSound.setVolume(0.1);
 	Shooter.prototype.deathSound.setVolume(0.2);
 }

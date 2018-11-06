@@ -1,9 +1,18 @@
-function AlienManager(){
+/*
+TODO: 
+	Move alien creation to a factory object to reduce coupling.
+	Refactor movement elements into movement module. Factor into functions that do one thing only.
+	Refactor collision detection into a single class for all entities.
+
+*/
+function AlienManager(gameObjects){
 	this.aliens = new List();
-	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);
+	this.targetFrame = Math.floor(Math.random() * 250 + frameCount);	//Next time an alien will shoot
 	this.alienPause = false;
 	this.flyingSaucer;
-	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);
+	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);	//next time a FlyingSaucer will spawn.
+	this.gameObjects = gameObjects;
+	this.alienHeight;
 	
 	//Returns a list containing 11 alien objects.
 	this.createRow = function(constructor, yVal){
@@ -26,6 +35,7 @@ function AlienManager(){
 			}
 			
 		}
+		this.alienHeight = this.aliens.get(0).get(0).getHeight();
 	}
 	
 	
@@ -80,7 +90,7 @@ function AlienManager(){
 		for(var k = 0; k < playerBulletManager.size(); k++){
 			//Check FlyingSaucer
 			if(this.flyingSaucer && this.flyingSaucer.detectCollision(playerBulletManager.getBullet(k))){
-				console.log("WELCOME TO EARF!");	//Put sound into class itself.
+				console.log("WELCOME TO EARF!");	//Easter egg yo.
 				gameManager.updateScore(this.flyingSaucer.score);
 				this.flyingSaucer = null;
 				playerBulletManager.remove(k);
@@ -101,7 +111,7 @@ function AlienManager(){
 	}
 	
 	//Orchestration function for calling regular alienManager functions. INCLUDE CHANGE SPRITES IN CLASSES!
-	this.manage = function(playerBulletManager, alienBulletManager){
+	this.manage = function(){
 		//When game is not paused.
 		if(!this.alienPause){
 			//Every 60 second update alien sprites and move main alien pack.
@@ -111,7 +121,7 @@ function AlienManager(){
 			}
 			//Shoot when it's targetFrame.
 			if(frameCount === this.targetFrame && !this.aliens.isEmpty()){
-				alienBulletManager.add(this.shoot());
+				this.gameObjects.getAlienBullets().add(this.shoot());
 			}
 			//If saucer is up, move it. If it goes out of bounds, remove it.
 			if(this.flyingSaucer){
@@ -127,8 +137,9 @@ function AlienManager(){
 			this.saucerFrame++;
 		}
 		//If a players bullet is in play, see if it hits anything.
-		if(!playerBulletManager.isEmpty()){
-			this.detectCollisions(playerBulletManager);
+		var playerBullets = this.gameObjects.getPlayerBullets();
+		if(!playerBullets.isEmpty()){
+			this.detectCollisions(playerBullets);
 		}
 		//Draw updated state to the screen.
 		this.display();
@@ -208,7 +219,7 @@ function AlienManager(){
 	this.aliensLanded = function(){
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.get(i).size(); j++){
-				if(this.get(i).get(j).y >= 400){
+				if(this.get(i).get(j).y >= this.gameObjects.getShieldY() - this.alienHeight){	//This is too low down.
 					return true;
 				}
 			}

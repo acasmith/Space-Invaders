@@ -8,16 +8,22 @@ function BulletManager(direction){
 	//If the bullet goes out of bounds, it's removed from the array.
 	this.manage = function(){
 		for(var i = 0; i < this.bulletList.size(); i++){
-			if(this.bulletList.get(i).update(this.direction)){
+			this.bulletList.get(i).update(this.direction);
+			if(this.bulletList.get(i).isOutOfBounds()){
 				this.remove(i);
 			} else{
 				this.bulletList.get(i).display();
 			}
 		}
-	};
+	}
 	
 	//Adds new bullet to bulletList array. 
 	this.add = function(playerBullet){
+		this.bulletList.add(playerBullet, -1);
+	}
+	
+	BulletManager.prototype.fire = function(bulletInfo){
+		var playerBullet = new Bullet(bulletInfo.x + (bulletInfo.width / 2), bulletInfo.y, bulletInfo.bulletColor)
 		this.bulletList.add(playerBullet, -1);
 	}
 	

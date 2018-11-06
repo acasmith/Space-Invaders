@@ -1,3 +1,5 @@
+//Not necessary anymore, can be replaced by arrays in all cases.
+//However some of the code uses this class and it's not hurting anybody.
 function List(){
 	this.array = [];
 }
