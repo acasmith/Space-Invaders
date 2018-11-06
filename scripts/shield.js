@@ -131,3 +131,8 @@ Shield.prototype.colorEdge = function(edgeArr){
 	}
 	this.sprite.updatePixels();
 }
+
+//Used in alienManager.aliensLanded(), so the check uses initial shield sprite size.
+Shield.prototype.getY = function(){
+	return this.y;
+}

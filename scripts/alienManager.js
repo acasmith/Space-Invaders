@@ -12,6 +12,7 @@ function AlienManager(gameObjects){
 	this.flyingSaucer;
 	this.saucerFrame = Math.floor(Math.random() * 5000 + frameCount);	//next time a FlyingSaucer will spawn.
 	this.gameObjects = gameObjects;
+	this.alienHeight;
 	
 	//Returns a list containing 11 alien objects.
 	this.createRow = function(constructor, yVal){
@@ -34,6 +35,7 @@ function AlienManager(gameObjects){
 			}
 			
 		}
+		this.alienHeight = this.aliens.get(0).get(0).getHeight();
 	}
 	
 	
@@ -88,7 +90,7 @@ function AlienManager(gameObjects){
 		for(var k = 0; k < playerBulletManager.size(); k++){
 			//Check FlyingSaucer
 			if(this.flyingSaucer && this.flyingSaucer.detectCollision(playerBulletManager.getBullet(k))){
-				console.log("WELCOME TO EARF!");	//Put sound into class itself.
+				console.log("WELCOME TO EARF!");	//Easter egg yo.
 				gameManager.updateScore(this.flyingSaucer.score);
 				this.flyingSaucer = null;
 				playerBulletManager.remove(k);
@@ -217,7 +219,7 @@ function AlienManager(gameObjects){
 	this.aliensLanded = function(){
 		for(var i = 0; i < this.aliens.size(); i++){
 			for(var j = 0; j < this.get(i).size(); j++){
-				if(this.get(i).get(j).y >= 400){	//This is too low down.
+				if(this.get(i).get(j).y >= this.gameObjects.getShieldY() - this.alienHeight){	//This is too low down.
 					return true;
 				}
 			}

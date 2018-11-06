@@ -29,7 +29,7 @@ Alien.prototype.display = function(){
 //Moves the alien either left or right depending on the value of this.direction.
 //Returns true when the alien moves out of bounds.
 Alien.prototype.move = function(){
-	this.x = this.direction ? this.x - 80: this.x + 80;
+	this.x = this.direction ? this.x - 10: this.x + 10;
 	return this.isOutOfBounds();
 }
 
@@ -64,4 +64,8 @@ Alien.prototype.isOutOfBounds = function(){
 		return true;
 	}
 	return false;
+}
+
+Alien.prototype.getHeight = function(){
+	return this.height;
 }

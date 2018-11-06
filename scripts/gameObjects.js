@@ -90,6 +90,9 @@ function gameObjects(gameManager){
 		}
 	}
 	
+	this.getShieldY = function(){
+		return this.shieldManager.getShieldY();
+	}
 	
 	
 }

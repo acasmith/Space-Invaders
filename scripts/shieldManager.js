@@ -47,3 +47,7 @@ ShieldManager.prototype.manage = function(){
 	this.detectCollisions(this.gameObjects.getAlienBullets(), "alien");
 	this.display();
 }
+
+ShieldManager.prototype.getShieldY = function(){
+	return this.shields[0].getY();
+}
